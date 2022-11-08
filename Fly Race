@@ -28,10 +28,17 @@ local function GetBestPart()
 end
 local bestpart = game:GetService("Workspace").LandSpots[GetBestPart()]
 
-
 local function click(a)
     game:GetService("VirtualInputManager"):SendMouseButtonEvent(a.AbsolutePosition.X+a.AbsoluteSize.X/2,a.AbsolutePosition.Y+50,0,true,a,1)
     game:GetService("VirtualInputManager"):SendMouseButtonEvent(a.AbsolutePosition.X+a.AbsoluteSize.X/2,a.AbsolutePosition.Y+50,0,false,a,1)
+end
+
+-- Tables
+
+local Eggs = {} do
+    for i,v in pairs(game:GetService("Workspace").Eggs:GetChildren()) do
+        table.insert(Eggs, v.Name)
+    end
 end
 
 -- Toggles
@@ -43,6 +50,7 @@ b:Toggle("Auto Race",function(bool)
     task.spawn(function()
         while task.wait() do
             if FinishRace then
+                game:GetService("ReplicatedStorage").Sounds.Launch.Volume = 0
                 pcall(function()
                     local char = lp.Character
                     local hum = char.Humanoid
@@ -88,6 +96,42 @@ b:Toggle("Auto Orb",function(bool)
                     end
                 end
             end
+        end
+    end)
+end)
+
+b:Label("===========",{
+    TextSize = 25; -- Self Explaining
+    TextColor = Color3.fromRGB(255,255,255); -- Self Explaining
+    BgColor = Color3.fromRGB(69,69,69); -- Self Explaining
+}) 
+
+local choosed_egg
+b:Dropdown("Choose Egg",{unpack(Eggs)},true,function(egg) --true/false, replaces the current title "Dropdown" with the option that t
+    choosed_egg = egg
+end)
+
+b:Toggle("Auto Hatch",function(bool)
+    getgenv().AutoHatch = bool
+    
+    task.spawn(function()
+        while AutoHatch and task.wait() do
+            pcall(function()
+                if choosed_egg ~= nil then
+                    if FinishRace then
+                        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").Eggs[choosed_egg].UIanchor.CFrame + Vector3.new(0, 0, 5)
+                        local args = {[1] = tostring(choosed_egg),[2] = "Single"}
+                        game:GetService("ReplicatedStorage").RemoteEvents.EggOpened:InvokeServer(unpack(args))
+                    else
+                        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").EggsEggs[choosed_egg].UIanchor.CFrame + Vector3.new(0, 0, 5)
+                        local args = {[1] = tostring(choosed_egg),[2] = "Single"}
+                        game:GetService("ReplicatedStorage").RemoteEvents.EggOpened:InvokeServer(unpack(args))
+                        task.wait(3)
+                    end
+                else
+                    warn("Please, choose your egg ):")
+                end
+            end)
         end
     end)
 end)
