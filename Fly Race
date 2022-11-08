@@ -1,0 +1,107 @@
+-- Library
+
+local library = loadstring(game:HttpGet(('https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wall%20v3')))()
+
+local w = library:CreateWindow("Fly Race Script")
+
+local b = w:CreateFolder("Main")
+local c = w:CreateFolder("Info")
+
+-- Variables
+
+local Players = game:GetService("Players")
+local lp = Players.LocalPlayer
+local launchPart = game:GetService("Workspace"):WaitForChild("Launch")
+
+-- Functions
+
+local function GetBestPart()
+	local land = {} do
+		for i,v in pairs(game.Workspace.LandSpots:GetChildren()) do
+			if v:IsA("Part") and v.Name ~= "End" then
+				table.insert(land, v)
+				v.Name = #land
+			end
+		end
+	end
+	return table.maxn(land)
+end
+local bestpart = game:GetService("Workspace").LandSpots[GetBestPart()]
+
+
+local function click(a)
+    game:GetService("VirtualInputManager"):SendMouseButtonEvent(a.AbsolutePosition.X+a.AbsoluteSize.X/2,a.AbsolutePosition.Y+50,0,true,a,1)
+    game:GetService("VirtualInputManager"):SendMouseButtonEvent(a.AbsolutePosition.X+a.AbsoluteSize.X/2,a.AbsolutePosition.Y+50,0,false,a,1)
+end
+
+-- Toggles
+warn("Ty for using my script bro <3 !")
+
+b:Toggle("Auto Race",function(bool)
+    getgenv().FinishRace = bool
+    
+    task.spawn(function()
+        while task.wait() do
+            if FinishRace then
+                pcall(function()
+                    local char = lp.Character
+                    local hum = char.Humanoid
+                    local hrp = char.HumanoidRootPart
+    
+                    launchPart.CFrame = hrp.CFrame
+                    hrp.CFrame = bestpart.CFrame + Vector3.new(0, 100, 0)
+                    hum.Health = 0
+                end)
+            end
+        end
+    end)
+end)
+
+b:Toggle("Auto Rebirth",function(bool)
+    getgenv().AutoRebirth = bool
+    
+    task.spawn(function()
+        while AutoRebirth and task.wait() do
+            if lp.PlayerGui.Main.SideTabs.Big.Rebirths.Main.Unchecked.Visible then
+                click(lp.PlayerGui.Main.SideTabs.Big.Rebirths)
+			    task.wait(.5)
+			    click(lp.PlayerGui.Rebirths.Main.Bottom.Confirm)
+		    end
+        end
+    end)
+end)
+
+b:Toggle("Auto Orb",function(bool)
+    getgenv().CollectOrb = bool
+    
+    task.spawn(function()
+        while CollectOrb and task.wait(1) do
+            for i,v in pairs(game.Workspace.Camera:GetChildren()) do
+                if v:IsA("Part") then
+                    if v:FindFirstChild("Orb") then
+                        v:Destroy()
+                    else
+                        local hrp = lp.Character.HumanoidRootPart
+                        v.Transparency = 1
+                        v.CanCollide = false
+                        v.CFrame = hrp.CFrame
+                    end
+                end
+            end
+        end
+    end)
+end)
+
+c:Label("UI : Wally UI V3",{
+    TextSize = 20; -- Self Explaining
+    TextColor = Color3.fromRGB(255,255,255); -- Self Explaining
+    BgColor = Color3.fromRGB(69,69,69); -- Self Explaining
+    
+})
+
+c:Label("Any Problems? SQK#9773",{
+    TextSize = 15; -- Self Explaining
+    TextColor = Color3.fromRGB(255,255,255); -- Self Explaining
+    BgColor = Color3.fromRGB(69,69,69); -- Self Explaining
+    
+})
