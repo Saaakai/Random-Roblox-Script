@@ -176,6 +176,7 @@ b:Button("Redeem Codes",function()
     end
 end)
 
+b:DestroyGui()
 
 c:Label("UI : Wally UI V3",{
     TextSize = 20; -- Self Explaining
