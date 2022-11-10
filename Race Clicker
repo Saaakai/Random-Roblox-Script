@@ -22,7 +22,7 @@ local Codes = {"UPDATECLICKCODE", "hallowx3", "Accelhidden", "opx3code", "500KLi
 -- Main
 
 local delay
-b:Slider("Auto Race Speed",{
+b:Slider("Auto Race Delay ( /s )",{
     min = 0.01; -- min value of the slider
     max = 1; -- max value of the slider
     precise = true; -- max 2 decimals
