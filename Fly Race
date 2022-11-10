@@ -28,6 +28,15 @@ local function GetBestPart()
 end
 local bestpart = game:GetService("Workspace").LandSpots[GetBestPart()]
 
+local function AutoCraft()
+    for i,v in pairs(lp.Pets:GetDescendants()) do
+        if v:IsA("NumberValue") and v.Name == "PetID" then
+            local args = {[1] = "CraftAll",[2] = {["PetID"] = v.Value}}
+            game:GetService("ReplicatedStorage").RemoteEvents.PetActionRequest:InvokeServer(unpack(args))
+        end  
+    end
+end
+
 local function click(a)
     game:GetService("VirtualInputManager"):SendMouseButtonEvent(a.AbsolutePosition.X+a.AbsoluteSize.X/2,a.AbsolutePosition.Y+50,0,true,a,1)
     game:GetService("VirtualInputManager"):SendMouseButtonEvent(a.AbsolutePosition.X+a.AbsoluteSize.X/2,a.AbsolutePosition.Y+50,0,false,a,1)
@@ -44,6 +53,15 @@ end
 -- Toggles
 warn("Ty for using my script bro <3 !")
 
+local delay = nil
+b:Slider("Delay Auto Race",{
+    min = 1.10; -- min value of the slider
+    max = 5; -- max value of the slider
+    precise = true; -- max 2 decimals
+},function(value)
+    delay = value
+end)
+
 b:Toggle("Auto Race",function(bool)
     getgenv().FinishRace = bool
     
@@ -56,7 +74,12 @@ b:Toggle("Auto Race",function(bool)
                     local hum = char.Humanoid
                     local hrp = char.HumanoidRootPart
     
-                    launchPart.CFrame = hrp.CFrame
+                    firetouchinterest(launchPart, hrp, 0)
+                    firetouchinterest(launchPart, hrp, 1)
+                    hrp.CFrame = hrp.CFrame + Vector3.new(0, 1000, 0)
+                    
+                    task.wait(tonumber(delay))
+                    
                     hrp.CFrame = bestpart.CFrame + Vector3.new(0, 100, 0)
                     hum.Health = 0
                 end)
@@ -83,19 +106,18 @@ b:Toggle("Auto Orb",function(bool)
     getgenv().CollectOrb = bool
     
     task.spawn(function()
-        while CollectOrb and task.wait(1) do
-            for i,v in pairs(game.Workspace.Camera:GetChildren()) do
-                if v:IsA("Part") then
-                    if v:FindFirstChild("Orb") then
-                        v:Destroy()
-                    else
+        while CollectOrb and task.wait() do
+            pcall(function()
+                for i,v in pairs(game.Workspace.Camera:GetChildren()) do
+                    if v:IsA("Part") and v.Orb.Item.Image ~= "rbxassetid://11411247929" then
                         local hrp = lp.Character.HumanoidRootPart
                         v.Transparency = 1
                         v.CanCollide = false
-                        v.CFrame = hrp.CFrame
+                        hrp.CFrame = v.CFrame + Vector3.new(0, 5, 0)
+                        task.wait(.1)
                     end
                 end
-            end
+            end)
         end
     end)
 end)
@@ -119,11 +141,11 @@ b:Toggle("Auto Hatch",function(bool)
             pcall(function()
                 if choosed_egg ~= nil then
                     if FinishRace then
-                        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").Eggs[choosed_egg].UIanchor.CFrame + Vector3.new(0, 0, 5)
+                        lp.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").Eggs[choosed_egg].UIanchor.CFrame + Vector3.new(0, 0, 5)
                         local args = {[1] = tostring(choosed_egg),[2] = "Single"}
                         game:GetService("ReplicatedStorage").RemoteEvents.EggOpened:InvokeServer(unpack(args))
                     else
-                        game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").EggsEggs[choosed_egg].UIanchor.CFrame + Vector3.new(0, 0, 5)
+                        lp.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").Eggs[choosed_egg].UIanchor.CFrame + Vector3.new(0, 0, 5)
                         local args = {[1] = tostring(choosed_egg),[2] = "Single"}
                         game:GetService("ReplicatedStorage").RemoteEvents.EggOpened:InvokeServer(unpack(args))
                         task.wait(3)
@@ -132,6 +154,17 @@ b:Toggle("Auto Hatch",function(bool)
                     warn("Please, choose your egg ):")
                 end
             end)
+        end
+    end)
+end)
+
+b:Toggle("Auto Craft",function(bool)
+    getgenv().AutoCraft = bool
+    
+    task.spawn(function()
+        while AutoCraft and task.wait() do
+           AutoCraft()
+           task.wait(5)  
         end
     end)
 end)
