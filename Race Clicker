@@ -22,7 +22,7 @@ local Codes = {"UPDATECLICKCODE", "hallowx3", "Accelhidden", "opx3code", "500KLi
 -- Main
 
 local delay
-b:Slider("Auto Race Delay ( /s )",{
+b:Slider("Auto Race Speed",{
     min = 0.01; -- min value of the slider
     max = 1; -- max value of the slider
     precise = true; -- max 2 decimals
@@ -95,13 +95,13 @@ b:Dropdown("Choose Egg",{unpack(Eggs)},true,function(egg)
     elseif egg == Eggs[3] then
         choosed_egg = "Starter03"
     elseif egg == Eggs[4] then
-        choosed_egg = "Pro01"
+        choosed_egg = "Starter04"
     elseif egg == Eggs[5] then
-        choosed_egg = "Pro02"
+        choosed_egg = "Pro01"
     elseif egg == Eggs[6] then
-        choosed_egg = "Pro03"
+        choosed_egg = "Pro02"
     elseif egg == Eggs[7] then
-        choosed_egg = "Pro04"
+        choosed_egg = "Pro03"
     elseif egg == Eggs[8] then
         choosed_egg = "Space01"
     elseif egg == Eggs[9] then
@@ -176,7 +176,6 @@ b:Button("Redeem Codes",function()
     end
 end)
 
-b:DestroyGui()
 
 c:Label("UI : Wally UI V3",{
     TextSize = 20; -- Self Explaining
