@@ -61,10 +61,8 @@ b:Toggle("Auto Speed",function(bool)
     task.spawn(function()
         while task.wait() do
             if AutoClick then
-                for i=0, 10000, 1 do
-                    if lp.PlayerGui.ClicksUI.ClickHelper.Visible == true then
-                        game:GetService("ReplicatedStorage").Packages.Knit.Services.ClickService.RF.Click:InvokeServer()
-                    end
+                if lp.PlayerGui.ClicksUI.ClickHelper.Visible == true then
+                    game:GetService("ReplicatedStorage").Packages.Knit.Services.ClickService.RF.Click:InvokeServer()
                 end
             end
         end
