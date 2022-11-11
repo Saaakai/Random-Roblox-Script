@@ -1,0 +1,171 @@
+-- Library
+
+local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
+local Window = Library.CreateLib("Merge Droppers! Script", "Serpent")
+local Tab = Window:NewTab("Main")
+local Tab2 = Window:NewTab("Others")
+local Tab3 = Window:NewTab("Credits")
+
+local Section = Tab:NewSection("")
+local Section1 = Tab:NewSection("")
+local Section11 = Tab:NewSection("")
+
+local Section2 = Tab2:NewSection("Since this game is boring, here's some scripts")
+
+local Section3 = Tab3:NewSection("")
+
+-- Variables
+
+local Players = game:GetService("Players")
+
+local lp = Players.LocalPlayer
+local char = lp.Character
+local hum = char.Humanoid
+local hrp = char.HumanoidRootPart
+
+local your_plot
+
+-- Functions
+
+local function GetPlot()
+    for i,v in pairs(game:GetService("Workspace").Tycoon.Plot:GetDescendants()) do
+        if v:IsA("ObjectValue") and v.Name == "Owner" then
+            if v.Value == lp then
+                your_plot = v.Parent.Name
+            end
+        end
+    end
+end
+GetPlot()
+
+local function GetDroppedParts()
+    for i,v in pairs(game.Workspace.Tycoon.Plot[your_plot].DropParts:GetDescendants()) do
+        if v:IsA("Part") then
+            v.CanCollide = false
+            v.CFrame = hrp.CFrame
+        end  
+    end
+end
+
+local function AutoDeposit()
+    local DepositButton = game:GetService("Workspace").Tycoon.Plot[your_plot]["Buttons_E"].Put.Head
+    
+    firetouchinterest(DepositButton, hrp, 0)
+    firetouchinterest(DepositButton, hrp, 1)
+end
+
+local function BuyUpgrade()
+    for i,v in pairs(game.Workspace.Tycoon.Plot[your_plot]["Buttons_E"]:GetDescendants()) do
+        if v:IsA("Part") and v.Name == "Head" and v.Parent.Name == "Upgrade" then
+            if v.BrickColor == BrickColor.new("Lime green") then
+                firetouchinterest(v, hrp, 0)
+                firetouchinterest(v, hrp, 1)
+            end
+        end  
+    end
+end
+
+local function AutoMerge()
+    local MergeButton = game:GetService("Workspace").Tycoon.Plot[your_plot]["Buttons_E"].Merge.Head
+    
+    firetouchinterest(MergeButton, hrp, 0)
+    firetouchinterest(MergeButton, hrp, 1)
+end
+
+-- Main
+
+Section:NewToggle("Auto Collect", "Auto Collect for you !", function(state)
+    if state then
+        getgenv().AC = true
+        
+        while AC and task.wait(.2) do
+           GetDroppedParts() 
+        end
+    else
+        getgenv().AC = false
+    end
+end)
+
+Section:NewToggle("Auto Deposit", "Auto Deposit for you !", function(state)
+    if state then
+        getgenv().AD = true
+        
+        while AD and task.wait(.5) do
+           AutoDeposit()
+        end
+    else
+        getgenv().AD = false
+    end
+end)
+
+local current_dropper
+Section1:NewDropdown("How much Droppers?", "How much droppers do you want to buy?", {"+1 Dropper", "+5 Droppers", "+10 Droppers", "+25 Droppers", "+50 Droppers", "+100 Droppers"}, function(currentOption)
+    if currentOption == "+1 Dropper" then
+        current_dropper = "Add"
+    elseif currentOption == "+5 Droppers" then
+        current_dropper = "Add5"
+    elseif currentOption == "+10 Droppers" then
+        current_dropper = "Add10"
+    elseif currentOption == "+25 Droppers" then
+        current_dropper = "Add25"
+    elseif currentOption == "+50 Droppers" then
+        current_dropper = "Add50"
+    elseif currentOption == "+100 Droppers" then
+        current_dropper = "Add100"
+    end
+end)
+
+Section1:NewToggle("Auto Buy Droppers", "Auto Buy Droppers for you !", function(state)
+    if state then
+        getgenv().ATD = true
+        
+        while ATD and task.wait(.5) do
+            for i,v in pairs(game.Workspace.Tycoon.Plot[your_plot]["Buttons_E"]:GetDescendants()) do
+                if v:IsA("Part") and v.Name == "Head" and v.Parent.Name ~= "Upgrade" then
+                    if v.Parent.Name == current_dropper then
+                        firetouchinterest(v, hrp, 0)
+                        firetouchinterest(v, hrp, 1)
+                    end
+                end  
+            end
+        end
+    else
+        getgenv().ATD = false
+    end
+end)
+
+Section11:NewToggle("Auto Buy Upgrade", "Auto Buy Upgrade for you !", function(state)
+    if state then
+        getgenv().ATU = true
+        
+        while ATU and task.wait(.5) do
+            BuyUpgrade()
+        end
+    else
+        getgenv().ATU = false
+    end
+end)
+
+Section11:NewToggle("Auto Merge", "Auto Merge for you", function(state)
+    if state then
+        getgenv().AM = true
+        
+        while AM and task.wait(1) do
+            AutoMerge()
+        end
+        
+    else
+        getgenv().AM = false
+    end
+end)
+
+Section2:NewSlider("WalkSpeed", "Change your speed", 200, 0, function(s) -- 500 (MaxValue) | 0 (MinValue)
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = s
+end)
+
+Section2:NewButton("Infinite Yield", "IY is made by : EDGE // ZWOLF // MOON // HUNTER", function()
+    loadstring(game:HttpGet("https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source"))()
+end)
+
+Section3:NewLabel("UI : Kavo UI")
+Section3:NewLabel("Script made by : SQK#9773")
