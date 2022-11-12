@@ -1,0 +1,173 @@
+-- Library
+
+local library = loadstring(game:HttpGet(('https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wall%20v3')))()
+
+local w = library:CreateWindow("DOORS Race Clicker")
+
+local b = w:CreateFolder("Main")
+local c = w:CreateFolder("Credits")
+
+-- Variables
+
+local Players = game:GetService("Players")
+
+local lp = Players.LocalPlayer
+
+-- Functions
+
+local function AutoCraft()
+    for i,v in pairs(lp.Pets:GetDescendants()) do
+        if v:IsA("NumberValue") and v.Name == "PetID" then
+            local args = {[1] = "Craft",[2] = {["PetID"] = v.Value}}
+            game:GetService("ReplicatedStorage").RemoteEvents.PetActionRequest:InvokeServer(unpack(args))
+        end
+    end
+end
+
+-- Tables
+
+local Eggs = {} do
+    for i,v in pairs(game:GetService("Workspace").Eggs:GetChildren()) do
+        if v.Name ~= "Seventh" and v.Name ~= "Sixth" then
+            table.insert(Eggs, v.Name)
+        end
+    end
+end
+
+-- Main
+
+local delay = nil
+b:Slider("Delay ( /sec )",{
+    min = 0; -- min value of the slider
+    max = 5; -- max value of the slider
+    precise = true; -- max 2 decimals
+},function(value)
+    delay = value
+end)
+
+b:Toggle("Auto Race",function(bool)
+    getgenv().FarmWin = bool
+    
+    task.spawn(function()
+        while task.wait() do
+            if FarmWin then
+                pcall(function()
+                    local char = lp.Character
+                    local hum = char.Humanoid
+                    local hrp = char.HumanoidRootPart
+    
+                    for i,v in pairs(game:GetService("Workspace").Map.winGates:GetChildren()) do
+                        if v:IsA("Part") then
+                            task.wait(tonumber(delay))
+                            hrp.CFrame = v.CFrame
+                        end
+                    end
+                end)
+            end
+        end
+    end)
+end)
+
+b:Toggle("Auto Speed",function(bool)
+    getgenv().AutoClick = bool
+    
+    task.spawn(function()
+        while task.wait() do
+            if AutoClick then
+                if lp.PlayerGui.Main.Click.Visible then
+                    game:GetService("ReplicatedStorage").Clickspeed:InvokeServer()
+                end
+            end
+        end
+    end)
+end)
+
+b:Label("===========",{
+    TextSize = 25; -- Self Explaining
+    TextColor = Color3.fromRGB(255,255,255); -- Self Explaining
+    BgColor = Color3.fromRGB(69,69,69); -- Self Explaining
+}) 
+
+local choosed_egg
+b:Dropdown("Choose Egg",{unpack(Eggs)},true,function(egg)
+    choosed_egg = egg
+end)
+
+b:Toggle("Auto Hatch",function(bool)
+    getgenv().AutoHatch = bool
+    
+    task.spawn(function()
+        while AutoHatch and task.wait() do
+            pcall(function()
+                if choosed_egg ~= nil then
+                    
+                    local char = lp.Character
+                    local hum = char.Humanoid
+                    local hrp = char.HumanoidRootPart
+                    
+                    if FarmWin then
+                        hrp.CFrame = game:GetService("Workspace").Eggs[choosed_egg].Incubator.Ring.CFrame + Vector3.new(5, 0, 0)
+                        
+                        local args = {[1] = choosed_egg,[2] = "Single"}
+                        game:GetService("ReplicatedStorage").RemoteEvents.EggOpened:InvokeServer(unpack(args))
+                        task.wait(1)
+                    else
+                        task.spawn(function()
+                            hrp.CFrame = game:GetService("Workspace").Eggs[choosed_egg].Incubator.Ring.CFrame + Vector3.new(5, 0, 0)
+                            task.wait(999999999)
+                        end)
+                        
+                        local args = {[1] = choosed_egg,[2] = "Single"}
+                        game:GetService("ReplicatedStorage").RemoteEvents.EggOpened:InvokeServer(unpack(args))
+                        task.wait(2)
+                    end
+                else
+                    warn("Please, choose your egg ):")
+                end
+            end)
+        end
+    end)
+end)
+
+b:Toggle("Auto Craft",function(bool)
+    getgenv().AutoCraft = bool
+    
+    task.spawn(function()
+        while AutoCraft and task.wait() do
+            pcall(function()
+                AutoCraft()
+                task.wait(5)
+            end)  
+        end
+    end)
+end)
+
+b:Label("===========",{
+    TextSize = 25; -- Self Explaining
+    TextColor = Color3.fromRGB(255,255,255); -- Self Explaining
+    BgColor = Color3.fromRGB(69,69,69); -- Self Explaining
+}) 
+
+
+b:DestroyGui()
+
+c:Label("UI : Wally UI V3",{
+    TextSize = 20; -- Self Explaining
+    TextColor = Color3.fromRGB(255,255,255); -- Self Explaining
+    BgColor = Color3.fromRGB(69,69,69); -- Self Explaining
+    
+})
+
+c:Label("Made by : SQK#9773",{
+    TextSize = 15; -- Self Explaining
+    TextColor = Color3.fromRGB(255,255,255); -- Self Explaining
+    BgColor = Color3.fromRGB(69,69,69); -- Self Explaining
+    
+})
+
+c:Label("Any Problems? ^ Add me :)",{
+    TextSize = 15; -- Self Explaining
+    TextColor = Color3.fromRGB(255,255,255); -- Self Explaining
+    BgColor = Color3.fromRGB(69,69,69); -- Self Explaining
+    
+})
