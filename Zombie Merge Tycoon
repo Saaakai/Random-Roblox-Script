@@ -191,7 +191,11 @@ c:Toggle("TP All Zombies",function(bool)
     
     task.spawn(function()
         while task.wait() do
-            if TPZombies then
+            pcall(function()
+                local char = lp.Character    
+                local hum = char.Humanoid
+                local hrp = char.HumanoidRootPart
+                    
                 local gate = game:GetService("Workspace").Tycoon.Tycoons[yourtycoon].Essentials.Gate.Beam
                 
                 for i,v in pairs(game:GetService("Workspace").Zombies:GetDescendants()) do
@@ -200,7 +204,7 @@ c:Toggle("TP All Zombies",function(bool)
                         task.wait(.2)
                     end
                 end
-            end
+            end)
         end
     end)
 end)
@@ -211,12 +215,19 @@ c:Toggle("Collect Drops",function(bool)
     task.spawn(function()
         while task.wait() do
             if CollectDropsPVE then
-                for i,v in pairs(game:GetService("Workspace"):GetChildren()) do
-                    if v:IsA("Part") and v.Name == "Money" then
-                        v.CanCollide = false
-                        v.CFrame = hrp.CFrame
+                pcall(function()
+                    
+                    local char = lp.Character    
+                    local hum = char.Humanoid
+                    local hrp = char.HumanoidRootPart
+                    
+                    for i,v in pairs(game:GetService("Workspace"):GetChildren()) do
+                        if v:IsA("Part") and v.Name == "Money" then
+                            v.CanCollide = false
+                            v.CFrame = hrp.CFrame
+                        end
                     end
-                end
+                end)
             end
         end
     end)
