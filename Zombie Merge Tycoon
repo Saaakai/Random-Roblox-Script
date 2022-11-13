@@ -191,20 +191,22 @@ c:Toggle("TP All Zombies",function(bool)
     
     task.spawn(function()
         while task.wait() do
-            pcall(function()
-                local char = lp.Character    
-                local hum = char.Humanoid
-                local hrp = char.HumanoidRootPart
+            if TPZombies then
+                pcall(function()
+                    local char = lp.Character    
+                    local hum = char.Humanoid
+                    local hrp = char.HumanoidRootPart
                     
-                local gate = game:GetService("Workspace").Tycoon.Tycoons[yourtycoon].Essentials.Gate.Beam
+                    local gate = game:GetService("Workspace").Tycoon.Tycoons[yourtycoon].Essentials.Gate.Beam
                 
-                for i,v in pairs(game:GetService("Workspace").Zombies:GetDescendants()) do
-                    if v:IsA("Part") and v.Name == "HumanoidRootPart" then  
-                        v.CFrame = hrp.CFrame + hrp.CFrame.lookVector * 7
-                        task.wait(.2)
+                    for i,v in pairs(game:GetService("Workspace").Zombies:GetDescendants()) do
+                        if v:IsA("Part") and v.Name == "HumanoidRootPart" then  
+                            v.CFrame = hrp.CFrame + hrp.CFrame.lookVector * 7
+                            task.wait(.2)
+                        end
                     end
-                end
-            end)
+                end)
+            end
         end
     end)
 end)
