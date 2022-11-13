@@ -1,0 +1,268 @@
+-- Library
+
+local library = loadstring(game:HttpGet(('https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wall%20v3')))()
+
+local w = library:CreateWindow("Zombie Merge Tycoon")
+
+local b = w:CreateFolder("Main")
+local c = w:CreateFolder("PVE & GunMod")
+local d = w:CreateFolder("Credits")
+
+-- Variables
+
+local Players = game:GetService("Players")
+
+local lp = Players.LocalPlayer
+local char = lp.Character
+local hum = char.Humanoid
+local hrp = char.HumanoidRootPart
+
+local yourtycoon
+local zombies
+local ChoosedWeapon
+local list_param_weapon = {[1] = "Damage",[2] = "Firerate",[3] = "HeadshotMultiplier"}
+local param_weapon
+
+-- Functions
+
+local function GetTycoon()
+    for i,v in pairs(game:GetService("Workspace").Tycoon.Tycoons:GetDescendants()) do
+        if v:IsA("ObjectValue") and v.Name == "Owner" then
+            if v.Value == lp then
+                yourtycoon = v.Parent.Name
+            end
+        end
+    end
+end
+GetTycoon()
+
+-- Main
+
+b:Toggle("Inf Sample",function(bool)
+    getgenv().InfSample = bool
+    
+    task.spawn(function()
+        while task.wait() do
+            if InfSample then
+                local args = {[1] = 14,[2] = Vector3.new(1, 1, 1)}
+                game:GetService("ReplicatedStorage").Signals.RemoteEvents.GetWoolRemote:FireServer(unpack(args))
+            end
+        end
+    end)
+end)
+
+b:Toggle("Auto Collect",function(bool)
+    getgenv().AutoCollect = bool
+    
+    task.spawn(function()
+        while task.wait() do
+            if AutoCollect then
+                for i,v in pairs(game:GetService("Workspace").Tycoon.Tycoons[yourtycoon].Drops:GetDescendants()) do
+                    if v:IsA("Part") then
+                        v.Transparency = 1
+                        v.CFrame = hrp.CFrame
+                        
+                    end
+                end
+            end
+        end
+    end)
+end)
+
+b:Toggle("Auto Deposit",function(bool)
+    getgenv().AutoDep = bool
+    
+    task.spawn(function()
+        while task.wait() do
+            if AutoDep then
+                game:GetService("ReplicatedStorage").Signals.RemoteEvents.PutRemote:FireServer()
+                task.wait(.3)
+            end
+        end
+    end)
+end)
+
+b:Toggle("Auto Upgrade",function(bool)
+    getgenv().AutoUpgrade = bool
+    
+    task.spawn(function()
+        while task.wait() do
+            if AutoUpgrade then
+                local UpgradeButton = game:GetService("Workspace").Tycoon.Tycoons[yourtycoon]["Buttons_E"].Upgrade.Head
+                UpgradeButton.CanCollide = false
+                
+                firetouchinterest(UpgradeButton, hrp, 0)
+                firetouchinterest(UpgradeButton, hrp, 1)
+                
+                task.wait(1)
+            end
+        end
+    end)
+end)
+
+b:Toggle("Auto Merge",function(bool)
+    getgenv().AutoMerge = bool
+    
+    task.spawn(function()
+        while task.wait() do
+            if AutoMerge then
+                local MergeButton = game:GetService("Workspace").Tycoon.Tycoons[yourtycoon]["Buttons_E"].Merge.Head
+                MergeButton.CanCollide = false
+                
+                firetouchinterest(MergeButton, hrp, 0)
+                firetouchinterest(MergeButton, hrp, 1)
+                
+                task.wait(3)
+            end
+        end
+    end)
+end)
+
+b:Label("==============",{
+    TextSize = 25,
+    TextColor = Color3.fromRGB(255,255,255),
+    BgColor = Color3.fromRGB(69,69,69)
+}) 
+
+b:Dropdown("How much Zombies?",{"+1 Zombie", "+3 Zombies", "+10 Zombies", "+30 Zombies", "+50 Zombies", "+100 Zombies"},true,function(mob) --true/false, replaces the current title "Dropdown" with the option that t
+    if mob == "+1 Zombie" then
+        zombies = "Add"
+    elseif mob == "+3 Zombies" then
+        zombies = "Add3"
+    elseif mob == "+10 Zombies" then
+        zombies = "Add10"
+    elseif mob == "+30 Zombies" then
+        zombies = "Add30"
+    elseif mob == "+50 Zombies" then
+        zombies = "Add50"
+    elseif mob == "+100 Zombies" then
+        zombies = "Add100"
+    end
+end)
+
+b:Toggle("^ Auto Add",function(bool)
+    getgenv().BuyZombie = bool
+    
+    task.spawn(function()
+        while task.wait() do
+            if BuyZombie then
+                for i,v in pairs(game:GetService("Workspace").Tycoon.Tycoons[yourtycoon]["Buttons_E"]:GetDescendants()) do
+                    if v:IsA("MeshPart") and v.Parent.Name == zombies then
+                        v.CanCollide = false
+                        firetouchinterest(v, hrp, 0)
+                        firetouchinterest(v, hrp, 1)
+                        task.wait(.5)
+                    end
+                end  
+            end
+        end
+    end)
+end)
+
+c:Toggle("TP All Zombies",function(bool)
+    getgenv().TPZombies = bool
+    
+    task.spawn(function()
+        while task.wait() do
+            if TPZombies then
+                local gate = game:GetService("Workspace").Tycoon.Tycoons[yourtycoon].Essentials.Gate.Beam
+                
+                for i,v in pairs(game:GetService("Workspace").Zombies:GetDescendants()) do
+                    if v:IsA("Part") and v.Name == "HumanoidRootPart" then  
+                        v.CFrame = hrp.CFrame + hrp.CFrame.lookVector * 7
+                        task.wait(.2)
+                    end
+                end
+            end
+        end
+    end)
+end)
+
+c:Toggle("Collect Drops",function(bool)
+    getgenv().CollectDropsPVE = bool
+    
+    task.spawn(function()
+        while task.wait() do
+            if CollectDropsPVE then
+                for i,v in pairs(game:GetService("Workspace"):GetChildren()) do
+                    if v:IsA("Part") and v.Name == "Money" then
+                        v.CanCollide = false
+                        v.CFrame = hrp.CFrame
+                    end
+                end
+            end
+        end
+    end)
+end)
+
+c:Label("Edit Weapon",{
+    TextSize = 25,
+    TextColor = Color3.fromRGB(255,255,255),
+    BgColor = Color3.fromRGB(69,69,69)
+})
+
+c:Dropdown("Which Weapon?",{"Pistol","SMG","AR", "Sniper"},true,function(a)
+    ChoosedWeapon = a
+    print(a)
+    
+    game.StarterGui:SetCore("SendNotification", {
+        Title = "GunMod";
+        Text = a .." Selected ! ( Be sure to not hold the weapon ! )";
+        Icon = "rbxassetid://6274377121";
+        Duration = 3;
+    })
+end)
+
+c:Dropdown("Which Parameter?",{unpack(list_param_weapon)},true,function(Param)
+    print(Param)
+    param_weapon = tostring(Param)
+    
+    game.StarterGui:SetCore("SendNotification", {
+        Title = ChoosedWeapon;
+        Text = Param .." Selected !";
+        Icon = "rbxassetid://6274377121";
+        Duration = 3;
+    })
+end)
+
+c:Box("How much?","number",function(value) -- "number" or "string"
+    if lp.Backpack[ChoosedWeapon].Configuration[param_weapon] ~= nil then
+        lp.Backpack[ChoosedWeapon].Configuration[param_weapon].Value = value
+        
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "Magic !";
+            Text = "Have fun !";
+            Icon = "rbxassetid://6274377121";
+            Duration = 3;
+        })
+        
+    else
+        game.StarterGui:SetCore("SendNotification", {
+            Title = "Mhh..";
+            Text = "Be sure to not hold the weapon! ( Contact me if it still doesn't work )";
+            Icon = "rbxassetid://6274377121";
+            Duration = 3;
+        })
+    end
+end)
+
+d:Label("UI : Wally UI V3",{
+    TextSize = 20; -- Self Explaining
+    TextColor = Color3.fromRGB(255,255,255); -- Self Explaining
+    BgColor = Color3.fromRGB(69,69,69); -- Self Explaining
+    
+})
+
+d:Label("Made by : SQK#9773",{
+    TextSize = 15; -- Self Explaining
+    TextColor = Color3.fromRGB(255,255,255); -- Self Explaining
+    BgColor = Color3.fromRGB(69,69,69); -- Self Explaining
+    
+})
+
+d:Label("Any Problems? ^ Add me :)",{
+    TextSize = 15; -- Self Explaining
+    TextColor = Color3.fromRGB(255,255,255); -- Self Explaining
+    BgColor = Color3.fromRGB(69,69,69); -- Self Explaining
+    
+})
