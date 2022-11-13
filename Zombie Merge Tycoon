@@ -56,15 +56,21 @@ b:Toggle("Auto Collect",function(bool)
     
     task.spawn(function()
         while task.wait() do
-            if AutoCollect then
-                for i,v in pairs(game:GetService("Workspace").Tycoon.Tycoons[yourtycoon].Drops:GetDescendants()) do
-                    if v:IsA("Part") then
-                        v.Transparency = 1
-                        v.CFrame = hrp.CFrame
-                        
+            pcall(function()
+                
+                local char = lp.Character    
+                local hum = char.Humanoid
+                local hrp = char.HumanoidRootPart
+                
+                if AutoCollect then
+                    for i,v in pairs(game:GetService("Workspace").Tycoon.Tycoons[yourtycoon].Drops:GetDescendants()) do
+                        if v:IsA("Part") then
+                            v.Transparency = 1
+                            v.CFrame = hrp.CFrame
+                        end
                     end
                 end
-            end
+            end)
         end
     end)
 end)
@@ -87,15 +93,22 @@ b:Toggle("Auto Upgrade",function(bool)
     
     task.spawn(function()
         while task.wait() do
-            if AutoUpgrade then
-                local UpgradeButton = game:GetService("Workspace").Tycoon.Tycoons[yourtycoon]["Buttons_E"].Upgrade.Head
-                UpgradeButton.CanCollide = false
+            pcall(function()
                 
-                firetouchinterest(UpgradeButton, hrp, 0)
-                firetouchinterest(UpgradeButton, hrp, 1)
+                local char = lp.Character    
+                local hum = char.Humanoid
+                local hrp = char.HumanoidRootPart
                 
-                task.wait(1)
-            end
+                if AutoUpgrade then
+                    local UpgradeButton = game:GetService("Workspace").Tycoon.Tycoons[yourtycoon]["Buttons_E"].Upgrade.Head
+                    UpgradeButton.CanCollide = false
+                
+                    firetouchinterest(UpgradeButton, hrp, 0)
+                    firetouchinterest(UpgradeButton, hrp, 1)
+                
+                    task.wait(1)
+                end
+            end)
         end
     end)
 end)
@@ -105,15 +118,22 @@ b:Toggle("Auto Merge",function(bool)
     
     task.spawn(function()
         while task.wait() do
-            if AutoMerge then
-                local MergeButton = game:GetService("Workspace").Tycoon.Tycoons[yourtycoon]["Buttons_E"].Merge.Head
-                MergeButton.CanCollide = false
+            pcall(function()
                 
-                firetouchinterest(MergeButton, hrp, 0)
-                firetouchinterest(MergeButton, hrp, 1)
+                local char = lp.Character    
+                local hum = char.Humanoid
+                local hrp = char.HumanoidRootPart
                 
-                task.wait(3)
-            end
+                if AutoMerge then
+                    local MergeButton = game:GetService("Workspace").Tycoon.Tycoons[yourtycoon]["Buttons_E"].Merge.Head
+                    MergeButton.CanCollide = false
+                    
+                    firetouchinterest(MergeButton, hrp, 0)
+                    firetouchinterest(MergeButton, hrp, 1)
+                    
+                    task.wait(3)
+                end
+            end)
         end
     end)
 end)
@@ -145,16 +165,23 @@ b:Toggle("^ Auto Add",function(bool)
     
     task.spawn(function()
         while task.wait() do
-            if BuyZombie then
-                for i,v in pairs(game:GetService("Workspace").Tycoon.Tycoons[yourtycoon]["Buttons_E"]:GetDescendants()) do
-                    if v:IsA("MeshPart") and v.Parent.Name == zombies then
-                        v.CanCollide = false
-                        firetouchinterest(v, hrp, 0)
-                        firetouchinterest(v, hrp, 1)
-                        task.wait(.5)
-                    end
-                end  
-            end
+            pcall(function()
+                
+                local char = lp.Character    
+                local hum = char.Humanoid
+                local hrp = char.HumanoidRootPart
+                
+                if BuyZombie then
+                    for i,v in pairs(game:GetService("Workspace").Tycoon.Tycoons[yourtycoon]["Buttons_E"]:GetDescendants()) do
+                        if v:IsA("MeshPart") and v.Parent.Name == zombies then
+                            v.CanCollide = false
+                            firetouchinterest(v, hrp, 0)
+                            firetouchinterest(v, hrp, 1)
+                            task.wait(.5)
+                        end
+                    end  
+                end
+            end)
         end
     end)
 end)
