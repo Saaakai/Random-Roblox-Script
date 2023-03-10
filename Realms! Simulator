@@ -54,14 +54,12 @@ b:Toggle("Kill Aura",function(bool)
     getgenv().KA = bool
     
     task.spawn(function()
-        while task.wait() do
-            if KA then
-                mobhrp = GetClosestMob()
+        while KA and task.wait() do
+            mobhrp = GetClosestMob()
         
-                if mobID then                   
-                    if (mobhrp and hrp) and hum.Health ~= 0 then
-                        AttackMob(tostring(mobID))
-                    end
+            if mobID then
+                if (mobhrp and hrp) and hum.Health ~= 0 then
+                    AttackMob(tostring(mobID))
                 end
             end
         end
@@ -72,24 +70,19 @@ b:Toggle("TP to Mobs",function(bool)
     getgenv().TM = bool
     
     task.spawn(function()
-        while task.wait() do
-            if TM then
-                mobhrp = GetClosestMob()
-
-                hrp.CFrame = mobhrp.CFrame + Vector3.new(0, 0, -3.3)
-            end
+        while TM and task.wait() do
+            mobhrp = GetClosestMob()
+            hrp.CFrame = mobhrp.CFrame + Vector3.new(0, 0, -3.3)
         end
     end)
 end)
 
 b:Toggle("Collect Drops",function(bool)
-    getgenv().C = bool
+    getgenv().CD = bool
     
     task.spawn(function()
-        while task.wait() do
-            if C then
-                GetDrops()
-            end
+        while CD and task.wait() do
+            GetDrops()
         end
     end)
 end)
