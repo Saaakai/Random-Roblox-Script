@@ -1,0 +1,110 @@
+local library = loadstring(game:HttpGet(('https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wall%20v3')))()
+
+local w = library:CreateWindow("Main") -- Creates the window
+
+local b = w:CreateFolder("hi") -- Creates the folder(U will put here your buttons,etc)
+local c = w:CreateFolder("lebron james")
+
+------------------------------------------------
+
+-- Variables
+local Players = game:GetService("Players")
+
+local lp = Players.LocalPlayer
+local char = lp.Character or lp.CharacterAdded:Wait()
+local hrp = char.HumanoidRootPart
+local hum = char.Humanoid
+local tp = false
+local mobhrp
+
+-- Functions
+local function GetDrops()
+    for i,v in pairs(game:GetService("Workspace").DROPS:GetDescendants()) do
+        if v:IsA("Part") then
+           v.CFrame = hrp.CFrame 
+        end
+    end
+end
+
+local function GetClosestMob()
+    local distance, maxdistance, target = nil, math.huge, nil
+    
+    for i,v in pairs(game:GetService("Workspace").RENDER.ENTITIES:GetDescendants()) do
+        if v:IsA("Part") and v.Name == "HumanoidRootPart" then
+            distance = (v.Position - hrp.Position).Magnitude
+            if distance < maxdistance then
+                maxdistance = distance
+                target = v
+            end
+        end
+    end
+    return target
+end
+
+local function AttackMob(enemy)
+    local args = {[1] = "Enemy",[2] = enemy}
+    game:GetService("ReplicatedStorage"):WaitForChild("Packages"):WaitForChild("_Index"):WaitForChild("sleitnick_knit@1.1.0-rc.1"):WaitForChild("knit"):WaitForChild("Services"):WaitForChild("PetsService"):WaitForChild("__comm__"):WaitForChild("RE"):WaitForChild("SwordAttack"):FireServer(unpack(args))
+end
+
+-- Main
+
+b:Toggle("Kill Aura",function(bool)
+    getgenv().A = bool
+    
+    task.spawn(function()
+        while task.wait() do
+            if A then
+                mobhrp = GetClosestMob()
+                local mobID = mobhrp.Parent
+            
+                if mobID then                   
+                    if (mobhrp and hrp) and hum.Health ~= 0 then
+                        AttackMob(tostring(mobID))
+                    end
+                end
+            end
+        end
+    end)
+end)
+
+b:Toggle("TP to Mobs",function(bool)
+    getgenv().B = bool
+    
+    task.spawn(function()
+        while task.wait() do
+            if B then
+                hrp.CFrame = mobhrp.CFrame + Vector3.new(0, 0, -3.3)
+            end
+        end
+    end)
+end)
+
+b:Toggle("Collect Drops",function(bool)
+    getgenv().C = bool
+    
+    task.spawn(function()
+        while task.wait() do
+            if C then
+                GetDrops()
+            end
+        end
+    end)
+end)
+
+c:Label("Any Problem? / Suggestion",{
+    TextSize = 15; -- Self Explaining
+    TextColor = Color3.fromRGB(255,255,255); -- Self Explaining
+    BgColor = Color3.fromRGB(69,69,69); -- Self Explaining
+    
+}) 
+
+c:Label("https://discord.gg/nSCSGth9Q5",{
+    TextSize = 15; -- Self Explaining
+    TextColor = Color3.fromRGB(255,255,255); -- Self Explaining
+    BgColor = Color3.fromRGB(69,69,69); -- Self Explaining
+    
+}) 
+
+c:Button("Copy to clipboard",function()
+    setclipboard("https://discord.gg/nSCSGth9Q5")
+end)
