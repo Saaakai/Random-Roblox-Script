@@ -58,7 +58,7 @@ b:Toggle("Kill Aura",function(bool)
                 local mobID = mobhrp.Parent
             
                 if mobID then                   
-                    if (mobhrp and hrp) and hum.Health ~= 0 then
+                    if (mobhrp and hrp) and hum.Health > 0 then
                         AttackMob(tostring(mobID))
                     end
                 end
