@@ -128,7 +128,10 @@ Section:NewToggle("Auto Mob", "Attack the vilain monster", function(state)
         end
     else
         getgenv().AutoMob = state
-        hrp.CFrame = current_plot.Spawns.MobTargetPosition.CFrame
+        for i = 1, 10 do
+            hrp.CFrame = current_plot.Spawns.MobTargetPosition.CFrame
+            task.wait()
+        end
     end
 end)
 
@@ -145,11 +148,21 @@ end)
 
 Section:NewToggle("Auto Hire", "Auto Hire", function(state)
     if state then
+        if not lp.PlayerGui.Hire.Holder.MainFrame.SkipFrame.Toggle:FindFirstChild("Icon").Visible then
+            local args = {[1] = "CanSkipHireScene"}
+            game:GetService("ReplicatedStorage")._GAME._MODULES.Utilities.NetworkUtility.Events.UpdateSettings:FireServer(unpack(args))
+        end
+        
+        if lp.PlayerGui.Feedback:FindFirstChild("Verification") then
+            lp.PlayerGui.Feedback.Verification:Destroy()
+        end
         getgenv().Hire = state
         task.spawn(function()
-            while Hire do
-                Hire()
-                task.wait(.75)
+            while task.wait() do
+                if getgenv().Hire then
+                    Hire()
+                    task.wait(.75)
+                end
             end
         end)
     else
