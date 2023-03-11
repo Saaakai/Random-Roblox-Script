@@ -1,4 +1,6 @@
-local library = loadstring(game:HttpGet(('https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wall%20v3')))()
+game.Players.LocalPlayer:Kick("The script got patched !")
+
+--[[ local library = loadstring(game:HttpGet(('https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wall%20v3')))()
 
 local w = library:CreateWindow("Main") -- Creates the window
 
@@ -104,3 +106,4 @@ c:Label("https://discord.gg/nSCSGth9Q5",{
 c:Button("Copy to clipboard",function()
     setclipboard("https://discord.gg/nSCSGth9Q5")
 end)
+--]]
