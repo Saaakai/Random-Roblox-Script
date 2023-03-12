@@ -1,0 +1,324 @@
+if not game:IsLoaded() then
+    game.Loaded:Wait()
+end
+
+-- UI LIBS
+
+local Library = loadstring(Game:HttpGet("https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wizard"))()
+
+local Tab = Library:NewWindow("Sword Fighters Sim")
+
+local Section = Tab:NewSection("Farm Mobs")
+local Section2 = Tab:NewSection("Automatics")
+local Section3 = Tab:NewSection("Pets")
+local Section4 = Tab:NewSection("Misc")
+local Section5 = Tab:NewSection("About")
+
+-- Variables
+
+local Players = game:GetService("Players")
+local vim = game:GetService('VirtualInputManager')
+
+local lp = Players.LocalPlayer
+local char = lp.Character
+local hrp = char.HumanoidRootPart
+
+
+local selected_egg
+
+-- Tables
+
+local Eggs = {}
+local Codes = {"SORRYSHUT1", "Ascend", "BugsSquashed", "Celestial", "Christmas", "COLLECTOR", "Eggmaster", "FeelingLucky", "GetRich", "GODLIKE", "Holiday", "Kolapo", "NewYear", "Oatsz", "Secret", "Sharpen", "Spraden", "Striker", "Strongest", "LUCKY100"}
+local Areas = {}
+local Weapons = {}
+
+-- Functions
+
+local function GetClosestTarget()
+    local distance, maxdistance, target, mobhrp, npcs = nil, math.huge, nil, nil, {}
+
+    for i,v in pairs(game:GetService("Workspace").Live.NPCs.Client:GetDescendants()) do
+		if v:IsA("Part") and v.Name == "HumanoidRootPart" then
+        	if not table.find(npcs, v.Parent) then
+            	table.insert(npcs, v.Parent)
+                distance = (hrp.Position - v.Position).Magnitude
+                if distance < maxdistance then
+                    maxdistance = distance
+                    mobhrp = v
+                    target = v.Parent
+                end
+            end
+        end
+    end
+    return target, mobhrp
+end
+
+local function KillAura()
+    local ID = GetClosestTarget()
+    local args = {[1] = tostring(ID)}
+    game:GetService("ReplicatedStorage").Packages.Knit.Services.ClickService.RF.Click:InvokeServer(unpack(args))
+end
+
+local function GoToMob()
+    local a, b = GetClosestTarget()
+    if hrp and b then
+        hrp.CFrame = b.CFrame 
+    end
+end
+
+local function CollectCoins()
+    for i,v in pairs(game:GetService("Workspace").Live.Pickups:GetChildren()) do
+        if i > 0 then
+            v.CFrame = hrp.CFrame
+        end
+    end
+end
+
+local function Ascend()
+    if lp.PlayerGui.LeftSidebar.Background.Frame.BottomButtons.Ascend:FindFirstChild("ReadyLabel").Visible then
+        game:GetService("ReplicatedStorage").Packages.Knit.Services.AscendService.RF.Ascend:InvokeServer()
+    end
+end
+
+local function EquipBestWeapon()
+    game:GetService("ReplicatedStorage").Packages.Knit.Services.WeaponInvService.RF.EquipBest:InvokeServer()
+end
+
+local function EquipBestPet()
+    game:GetService("ReplicatedStorage").Packages.Knit.Services.PetInvService.RF.EquipBest:InvokeServer()
+end
+
+local function ClaimPetIndex()
+    for i = 1, 7 do
+        local args = {[1] = i}
+        game:GetService("ReplicatedStorage").Packages.Knit.Services.IndexService.RF.Claim:InvokeServer(unpack(args))
+    end
+end
+
+local function m1click() 
+    vim:SendMouseButtonEvent(0,0,0,true,game,0)
+    wait()
+    vim:SendMouseButtonEvent(0,0,0,false,game,0)
+end
+
+
+local function BuyEgg(egg)
+    local args = {[1] = {["eggName"] = egg,["auto"] = false,["amount"] = 1}}
+    game:GetService("ReplicatedStorage").Packages.Knit.Services.EggService.RF.BuyEgg:InvokeServer(unpack(args))
+    task.wait(3)
+    m1click()
+end
+
+-- Main
+
+Section:CreateToggle("Kill Aura", function(value)
+    if value then
+        getgenv().KA = value
+        
+        task.spawn(function()
+            while KA and task.wait() do
+                KillAura()
+            end
+        end)
+    else
+        getgenv().KA = value
+    end
+end)
+
+Section:CreateToggle("Auto Mob", function(value)
+    if value then
+        getgenv().TPMOBS = value
+         
+        task.spawn(function()
+            while TPMOBS and task.wait() do
+                GoToMob()
+            end
+        end)
+    else
+        getgenv().TPMOBS = value
+    end
+end)
+
+Section:CreateToggle("Auto Collect Coins", function(value)
+    if value then
+        getgenv().CC = value
+         
+        task.spawn(function()
+            while CC and task.wait() do
+                CollectCoins()
+            end
+        end)
+    else
+        getgenv().CC = value
+    end
+end)
+
+Section2:CreateToggle("Auto Ascend", function(value)
+    if value then
+        getgenv().AA = value
+         
+        task.spawn(function()
+            while AA and task.wait() do
+                Ascend()
+            end
+        end)
+    else
+        getgenv().AA = value
+    end
+end)
+
+Section2:CreateToggle("Auto Upgrades", function(value)
+    if value then
+        
+        -- Since i'm fucking lazy to add a moneycheck, I'll just destroy those annoying pop-up and ggwp
+        if game:GetService("CoreGui"):FindFirstChild("PurchasePrompt") then
+            game:GetService("CoreGui").PurchasePrompt:Destroy()
+        end
+        if lp.PlayerGui:FindFirstChild("Notification") then
+            lp.PlayerGui.Notification.Enabled = false
+        end
+        
+        getgenv().AU = value
+         
+        task.spawn(function()
+            while AU do
+                for i, area in (game:GetService("Workspace").Resources.Spawns:GetChildren()) do
+                    local args = {[1] = tostring(area),[2] = "Power Gain"}
+                    game:GetService("ReplicatedStorage").Packages.Knit.Services.UpgradeService.RF.Upgrade:InvokeServer(unpack(args))
+                    task.wait()
+                    local args = {[1] = tostring(area),[2] = "More Storage"}
+                    game:GetService("ReplicatedStorage").Packages.Knit.Services.UpgradeService.RF.Upgrade:InvokeServer(unpack(args))
+                    task.wait()
+                    local args = {[1] = tostring(area),[2] = "WalkSpeed"}
+                    game:GetService("ReplicatedStorage").Packages.Knit.Services.UpgradeService.RF.Upgrade:InvokeServer(unpack(args))
+                    task.wait()
+                    local args = {[1] = tostring(area),[2] = "Crit Chance"}
+                    game:GetService("ReplicatedStorage").Packages.Knit.Services.UpgradeService.RF.Upgrade:InvokeServer(unpack(args))
+                    task.wait()
+                    local args = {[1] = tostring(area),[2] = "Crit Multiplier"}
+                    game:GetService("ReplicatedStorage").Packages.Knit.Services.UpgradeService.RF.Upgrade:InvokeServer(unpack(args))
+                end
+                task.wait(3)
+            end
+        end)
+    else
+        getgenv().AU = value
+    end
+end)
+
+for i,v in pairs(lp.PlayerGui.WeaponInv.Background.ImageFrame.Window.WeaponHolder.WeaponScrolling:GetDescendants()) do
+    if v:IsA("TextLabel") and v.Name == "TextLabel" then
+        table.insert(Weapons, v.Parent.Name)
+    end
+end
+Section2:CreateToggle("Auto Forge", function(value)
+    if value then
+        getgenv().AF = value
+        
+        while AF and task.wait() do
+            for i,v in pairs(Weapons) do
+                local args = {[1] = v}
+                game:GetService("ReplicatedStorage").Packages.Knit.Services.ForgeService.RF.Forge:InvokeServer(unpack(args))
+            end
+            task.wait(5)
+        end
+    else
+        getgenv().AF = value
+    end
+end)
+
+Section2:CreateToggle("Equip Best Pet", function(value)
+    if value then
+        getgenv().BP = value
+        game:GetService("ReplicatedStorage").Packages.Knit.Services.PetInvService.RF.EquipBest:InvokeServer()
+    else
+        getgenv().BP = value
+    end
+end)
+
+Section2:CreateToggle("Equip Best Weapon", function(value)
+    if value then
+        getgenv().BW = value
+        game:GetService("ReplicatedStorage").Packages.Knit.Services.WeaponInvService.RF.EquipBest:InvokeServer()
+    else
+        getgenv().BW = value
+    end
+end)
+
+for i,v in pairs(game:GetService("Workspace").Resources.Eggs:GetChildren()) do
+    table.insert(Eggs, tostring(v.Name))
+end
+Section3:CreateDropdown("Select Egg", {unpack(Eggs)}, 2, function(text)
+    selected_egg = text
+    hrp.CFrame = game:GetService("Workspace").Resources.Eggs[selected_egg].CFrame
+end)
+
+Section3:CreateToggle("Auto Buy Egg", function(value)
+    if value then
+        getgenv().ABE = value
+         
+        task.spawn(function()
+            while ABE and task.wait(1) do
+                if selected_egg ~= nil then
+                    BuyEgg(selected_egg)
+                end
+            end
+        end)
+    else
+        getgenv().ABE = value
+    end
+end)
+
+Section4:CreateButton("Redeem Codes", function()
+    for a, code in Codes do
+        local args = {[1] = code}
+        game:GetService("ReplicatedStorage").Packages.Knit.Services.CodeService.RF.RedeemCode:InvokeServer(unpack(args))
+    end
+end)
+
+Section4:CreateButton("Claim Pet Index", function()
+    ClaimPetIndex()
+end)
+
+Section4:CreateButton("Claim Daily Chest", function()
+    local args = {[1] = "Chest 1"}
+    game:GetService("ReplicatedStorage").Packages.Knit.Services.ChestService.RF.ClaimChest:InvokeServer(unpack(args))
+end)
+
+Section4:CreateButton("Claim Group Chest", function()
+    local args = {[1] = "Chest 2"}
+    game:GetService("ReplicatedStorage").Packages.Knit.Services.ChestService.RF.ClaimChest:InvokeServer(unpack(args))
+end)
+
+Section5:CreateButton("Any suggestions? v", function()
+    print("hi u")
+end)
+Section5:CreateButton("Join my Discord", function()
+    setclipboard("https://discord.com/invite/nSCSGth9Q5")
+end)
+
+----------------------------------------------------------------------------------------------------
+
+lp.PlayerGui.PetInv.Background.ImageFrame.Window.PetHolder.PetScrolling.ChildAdded:Connect(function()
+    print("test")
+    if getgenv().BP then
+        game:GetService("ReplicatedStorage").Packages.Knit.Services.PetInvService.RF.EquipBest:InvokeServer()
+    end
+end)
+
+lp.PlayerGui.WeaponInv.Background.ImageFrame.Window.WeaponHolder.WeaponScrolling.ChildAdded:Connect(function(child)
+    if child then
+       table.insert(Weapons, child.Name) 
+    end
+    
+    if getgenv().BW then
+        game:GetService("ReplicatedStorage").Packages.Knit.Services.WeaponInvService.RF.EquipBest:InvokeServer()
+    end
+end)
+
+lp.PlayerGui.WeaponInv.Background.ImageFrame.Window.WeaponHolder.WeaponScrolling.ChildRemoved:Connect(function(childR)
+    if childR then
+       table.remove(Weapons , table.find(Weapons , childR.Name))
+    end
+end)
