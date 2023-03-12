@@ -247,11 +247,21 @@ Section2:CreateToggle("Equip Best Weapon", function(value)
 end)
 
 for i,v in pairs(game:GetService("Workspace").Resources.Eggs:GetChildren()) do
-    table.insert(Eggs, tostring(v.Name))
+    if not table.find(Eggs, tostring(v.Name)) then
+        table.insert(Eggs, tostring(v.Name))
+    end
 end
 Section3:CreateDropdown("Select Egg", {unpack(Eggs)}, 2, function(text)
     selected_egg = text
     hrp.CFrame = game:GetService("Workspace").Resources.Eggs[selected_egg].CFrame
+end)
+
+Section3:CreateButton("Refresh", function()
+    for i,v in pairs(game:GetService("Workspace").Resources.Eggs:GetChildren()) do
+        if not table.find(Eggs, tostring(v.Name)) then
+            table.insert(Eggs, tostring(v.Name))
+        end
+    end
 end)
 
 Section3:CreateToggle("Auto Buy Egg", function(value)
@@ -294,7 +304,7 @@ end)
 Section5:CreateButton("Any suggestions? v", function()
     print("hi u")
 end)
-Section5:CreateButton("Join my Discord", function()
+Section5:CreateButton("Join my Discord ( Click )", function()
     setclipboard("https://discord.com/invite/nSCSGth9Q5")
 end)
 
