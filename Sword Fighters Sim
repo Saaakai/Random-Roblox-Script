@@ -10,7 +10,7 @@ local Tab = Library:NewWindow("Sword Fighters Sim")
 
 local Section = Tab:NewSection("Farm Mobs")
 local Section2 = Tab:NewSection("Automatics")
-local Section3 = Tab:NewSection("Pets")
+--local Section3 = Tab:NewSection("Pets")
 local Section4 = Tab:NewSection("Misc")
 local Section5 = Tab:NewSection("About")
 
@@ -102,13 +102,12 @@ local function m1click()
     vim:SendMouseButtonEvent(0,0,0,false,game,0)
 end
 
-
-local function BuyEgg(egg)
+--[[ local function BuyEgg(egg)
     local args = {[1] = {["eggName"] = egg,["auto"] = false,["amount"] = 1}}
     game:GetService("ReplicatedStorage").Packages.Knit.Services.EggService.RF.BuyEgg:InvokeServer(unpack(args))
     task.wait(3)
     m1click()
-end
+end --]]
 
 -- Main
 
@@ -246,7 +245,7 @@ Section2:CreateToggle("Equip Best Weapon", function(value)
     end
 end)
 
-for i,v in pairs(game:GetService("Workspace").Resources.Eggs:GetChildren()) do
+--[[ for i,v in pairs(game:GetService("Workspace").Resources.Eggs:GetChildren()) do
     if not table.find(Eggs, tostring(v.Name)) then
         table.insert(Eggs, tostring(v.Name))
     end
@@ -254,14 +253,6 @@ end
 Section3:CreateDropdown("Select Egg", {unpack(Eggs)}, 2, function(text)
     selected_egg = text
     hrp.CFrame = game:GetService("Workspace").Resources.Eggs[selected_egg].CFrame
-end)
-
-Section3:CreateButton("Refresh", function()
-    for i,v in pairs(game:GetService("Workspace").Resources.Eggs:GetChildren()) do
-        if not table.find(Eggs, tostring(v.Name)) then
-            table.insert(Eggs, tostring(v.Name))
-        end
-    end
 end)
 
 Section3:CreateToggle("Auto Buy Egg", function(value)
@@ -278,7 +269,7 @@ Section3:CreateToggle("Auto Buy Egg", function(value)
     else
         getgenv().ABE = value
     end
-end)
+end) --]]
 
 Section4:CreateButton("Redeem Codes", function()
     for a, code in Codes do
