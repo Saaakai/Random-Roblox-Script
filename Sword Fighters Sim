@@ -10,7 +10,7 @@ local Tab = Library:NewWindow("Sword Fighters Sim")
 
 local Section = Tab:NewSection("Farm Mobs")
 local Section2 = Tab:NewSection("Automatics")
---local Section3 = Tab:NewSection("Pets")
+local Section3 = Tab:NewSection("Pets")
 local Section4 = Tab:NewSection("Misc")
 local Section5 = Tab:NewSection("About")
 
@@ -23,14 +23,14 @@ local lp = Players.LocalPlayer
 local char = lp.Character
 local hrp = char.HumanoidRootPart
 
-
 local selected_egg
+local quest_available
 
 -- Tables
 
 local Eggs = {}
 local Codes = {"SORRYSHUT1", "Ascend", "BugsSquashed", "Celestial", "Christmas", "COLLECTOR", "Eggmaster", "FeelingLucky", "GetRich", "GODLIKE", "Holiday", "Kolapo", "NewYear", "Oatsz", "Secret", "Sharpen", "Spraden", "Striker", "Strongest", "LUCKY100"}
-local Areas = {}
+local QuestsID = {}
 local Weapons = {}
 
 -- Functions
@@ -75,6 +75,54 @@ local function CollectCoins()
     end
 end
 
+local function GetNearestQuest()
+	local distance, maxdistance, quest_target = nil, math.huge, nil
+
+	for quest, pos in QuestsID do
+        distance = (hrp.Position - pos.Position).Magnitude
+        if distance < maxdistance then
+           maxdistance = distance
+           quest_target = pos
+        end
+	end
+    return quest_target
+end
+
+local function GetQuestName()
+	local questid, questname, available = nil, nil, false
+
+	for i,v in pairs(game:GetService("Players").Sqkou.PlayerGui:GetChildren()) do
+		if v:IsA("BillboardGui") and v.Name == "QuestGuide" then
+			questid = GetNearestQuest()
+			if v.Adornee == questid then
+				questname = v:FindFirstChild("NameLabel").Text
+				available = v:FindFirstChild("Text1").Text
+			end
+		end
+	end
+	return questid, questname, available
+end
+
+local function GoToQuest()
+	local questpart, Rquestname, available = GetQuestName()
+
+	if questpart and Rquestname then
+		if available ~= "" then
+            quest_available = true
+			--hrp.CFrame = questpart.CFrame
+			--task.wait(1)
+			--game:GetService('VirtualInputManager'):SendKeyEvent(true,'E',false, game)
+			local args = {[1] = tostring(questpart)}
+			game:GetService("ReplicatedStorage").Packages.Knit.Services.QuestService.RF.ActionQuest:InvokeServer(unpack(args))
+			task.wait()
+			local args = {[1] = Rquestname}
+			game:GetService("ReplicatedStorage").Packages.Knit.Services.QuestService.RF.ActionQuest:InvokeServer(unpack(args))
+        else
+            quest_available = false
+		end
+	end
+end
+
 local function Ascend()
     if lp.PlayerGui.LeftSidebar.Background.Frame.BottomButtons.Ascend:FindFirstChild("ReadyLabel").Visible then
         game:GetService("ReplicatedStorage").Packages.Knit.Services.AscendService.RF.Ascend:InvokeServer()
@@ -102,14 +150,32 @@ local function m1click()
     vim:SendMouseButtonEvent(0,0,0,false,game,0)
 end
 
---[[ local function BuyEgg(egg)
-    local args = {[1] = {["eggName"] = egg,["auto"] = false,["amount"] = 1}}
-    game:GetService("ReplicatedStorage").Packages.Knit.Services.EggService.RF.BuyEgg:InvokeServer(unpack(args))
-    task.wait(3)
+local function Notification(title, text)
+    game:GetService("StarterGui"):SetCore("SendNotification",{
+        Title = title, -- Required
+        Text = text, -- Required
+        Icon = "rbxassetid://1234567890" -- Optional
+    })
+end
+
+local function BuyEgg(egg)
+    game:GetService('VirtualInputManager'):SendKeyEvent(true,'E',false, game)
+    task.wait()
     m1click()
-end --]]
+end
 
 -- Main
+
+Notification("Thanks for using my script :)", "")
+-- Loading all elements & Adding Eggs
+for i,v in pairs(game:GetService("Workspace").Live.FloatingEggs:GetDescendants()) do
+	if v:IsA("Part") and v.Name == "HumanoidRootPart" then
+        table.insert(Eggs, v.Parent.Name)
+		hrp.CFrame = v.CFrame
+		task.wait(0.01)
+	end
+	hrp.CFrame = game:GetService("Workspace").Live.FloatingEggs["Weak Egg"].HumanoidRootPart.CFrame + Vector3.new(-30, 0, 0)
+end
 
 Section:CreateToggle("Kill Aura", function(value)
     if value then
@@ -131,11 +197,29 @@ Section:CreateToggle("Auto Mob", function(value)
          
         task.spawn(function()
             while TPMOBS and task.wait() do
-                GoToMob()
+                local a,b = GetClosestTarget()
+                
+                if b and hrp and not quest_available then
+                    GoToMob()
+                end
             end
         end)
     else
         getgenv().TPMOBS = value
+    end
+end)
+
+Section:CreateToggle("Auto Quest", function(value)
+    if value then
+        getgenv().AQ = value
+         
+        task.spawn(function()
+            while AQ and task.wait() do
+                GoToQuest()
+            end
+        end)
+    else
+        getgenv().AQ = value
     end
 end)
 
@@ -206,11 +290,6 @@ Section2:CreateToggle("Auto Upgrades", function(value)
     end
 end)
 
-for i,v in pairs(lp.PlayerGui.WeaponInv.Background.ImageFrame.Window.WeaponHolder.WeaponScrolling:GetDescendants()) do
-    if v:IsA("TextLabel") and v.Name == "TextLabel" then
-        table.insert(Weapons, v.Parent.Name)
-    end
-end
 Section2:CreateToggle("Auto Forge", function(value)
     if value then
         getgenv().AF = value
@@ -245,14 +324,11 @@ Section2:CreateToggle("Equip Best Weapon", function(value)
     end
 end)
 
---[[ for i,v in pairs(game:GetService("Workspace").Resources.Eggs:GetChildren()) do
-    if not table.find(Eggs, tostring(v.Name)) then
-        table.insert(Eggs, tostring(v.Name))
-    end
-end
 Section3:CreateDropdown("Select Egg", {unpack(Eggs)}, 2, function(text)
-    selected_egg = text
-    hrp.CFrame = game:GetService("Workspace").Resources.Eggs[selected_egg].CFrame
+    if text then
+        selected_egg = text
+        hrp.CFrame = game:GetService("Workspace").Live.FloatingEggs[selected_egg].HumanoidRootPart.CFrame
+    end
 end)
 
 Section3:CreateToggle("Auto Buy Egg", function(value)
@@ -269,7 +345,7 @@ Section3:CreateToggle("Auto Buy Egg", function(value)
     else
         getgenv().ABE = value
     end
-end) --]]
+end)
 
 Section4:CreateButton("Redeem Codes", function()
     for a, code in Codes do
@@ -304,6 +380,18 @@ Section5:CreateButton("Join my Discord ( Click )", function()
 end)
 
 ----------------------------------------------------------------------------------------------------
+
+for i,v in pairs(lp.PlayerGui.WeaponInv.Background.ImageFrame.Window.WeaponHolder.WeaponScrolling:GetDescendants()) do
+    if v:IsA("TextLabel") and v.Name == "TextLabel" then
+        table.insert(Weapons, v.Parent.Name)
+    end
+end
+
+for i,v in pairs(game:GetService("Workspace").Resources.Quests:GetChildren()) do
+	if v:IsA("Part") and v.Name ~= "Egg Master" or not "Sword Master" or not "Soul Teacher" or not "Executioner" then
+		table.insert(QuestsID, v)
+	end
+end
 
 lp.PlayerGui.PetInv.Background.ImageFrame.Window.PetHolder.PetScrolling.ChildAdded:Connect(function()
     print("test")
