@@ -1,0 +1,318 @@
+-- UI LIBS
+local library = loadstring(game:HttpGet(('https://raw.githubusercontent.com/bloodball/-back-ups-for-libs/main/wall%20v3')))()
+
+local w = library:CreateWindow("Anime Souls Sim")
+
+local b = w:CreateFolder("Main")
+local c = w:CreateFolder("Pets")
+local d = w:CreateFolder("Misc")
+local e = w:CreateFolder("Credit")
+
+-- Variables
+local Players = game:GetService("Players")
+local rs = game:GetService("RunService").RenderStepped
+
+local lp = Players.LocalPlayer
+local char = lp.Character
+local hrp = char.HumanoidRootPart
+
+local find = table.find
+local insert = table.insert
+
+local selected_mob
+local selected_zone
+
+-- Tables
+local Zones = {}
+local ZonesName = {}
+for i,v in pairs(game:GetService("Workspace")["_QUESTS"]:GetDescendants()) do
+    if v:IsA("Part") and v.Name == "Mural" then
+        table.insert(Zones, v)
+        table.insert(ZonesName, v.Parent.Name)
+    end
+end
+
+local AllMobs = {}
+local Mobs = {}
+
+-- Functions
+local function GetCurrentZone()
+    local distance, maxdistance, current_zone, current_zone_name = nil, math.huge, nil, nil
+    
+    for a, zone in Zones do
+        distance = (hrp.Position - zone.Position).Magnitude
+        if distance < maxdistance then
+            maxdistance = distance
+            current_zone = zone
+            current_zone_name = zone.Parent.Name
+        end
+    end
+    return current_zone_name, current_zone
+end
+
+local function GetMobs()
+	local current_zone = GetCurrentZone()
+        
+    for i,v in pairs(game:GetService("Workspace")["_ENEMIES"][current_zone]:GetChildren()) do
+		table.insert(AllMobs, v.Name)
+    end
+end
+
+local function NoDupeMobs()
+    GetMobs()
+    for _, v in pairs(AllMobs) do
+        if not table.find(Mobs, v) then
+            table.insert(Mobs, v)		
+        end
+    end
+end
+NoDupeMobs()
+
+local function GetNearestEnemy()
+    local distance, maxdistance, target = nil, math.huge, nil
+    local current_zone = GetCurrentZone()
+    
+    for i,v in pairs(game:GetService("Workspace")["_ENEMIES"][current_zone]:GetDescendants()) do
+        if v:IsA("Part") and v.Name == "HumanoidRootPart" then
+            distance = (hrp.Position - v.Position).Magnitude
+            if (distance < maxdistance) then
+                maxdistance = distance
+                target = v
+                targetname = v.Parent
+            end
+        end
+    end
+    return target, targetname
+end
+
+local function Hit()
+    local mobhrp, mobname = GetNearestEnemy()
+    
+    if mobhrp and mobname then
+        local args = {[1] = {[1] = "Hit",[2] = mobname}}
+        game:GetService("ReplicatedStorage").Remotes.Server:FireServer(unpack(args))
+    end
+end
+
+local function ClaimAchievement(achievement)
+    local args = {[1] = {[1] = "Achievements",[2] = tostring(achievement)}}
+    game:GetService("ReplicatedStorage").Remotes.Server:FireServer(unpack(args))
+end
+
+local function Class()
+    local args = {[1] = {[1] = "Class"}}
+    game:GetService("ReplicatedStorage").Remotes.Server:FireServer(unpack(args))
+end
+
+local function Hatch(choosed_zone)
+    local args = {[1] = {[1] = "BuyHeroes",[2] = choosed_zone}}
+    game:GetService("ReplicatedStorage").Remotes.Server:FireServer(unpack(args))
+end
+
+local function Redeem(code)
+    local args = {[1] = {[1] = "Codes",[2] = code}}
+    game:GetService("ReplicatedStorage").Remotes.Server:FireServer(unpack(args))
+end
+
+local function Notifier(title, text)
+    game.StarterGui:SetCore("SendNotification", {
+        Title = title,
+        Text = text,
+        Duration = 5
+    }) 
+end
+
+local function TweenToTarget(CFgo)
+    local tween_s = game:GetService("TweenService")
+    local info = TweenInfo.new((game:GetService("Players")["LocalPlayer"].Character.HumanoidRootPart.Position - CFgo.Position).Magnitude/350, Enum.EasingStyle.Linear)
+    local tween = tween_s:Create(game.Players.LocalPlayer.Character["HumanoidRootPart"], info, {CFrame = CFgo})
+    tween:Play()
+end
+
+-- Main
+b:Toggle("Auto Hit",function(bool)
+    if bool then
+        getgenv().AutoHit = bool
+        
+        task.spawn(function()
+            while AutoHit and task.wait() do
+                Hit()
+            end
+        end)
+    else
+        getgenv().AutoHit = bool
+    end
+end)
+
+local mobsdropdown = b:Dropdown("Select Mobs",{unpack(Mobs)},true,function(mob) --true/false, replaces the current title "Dropdown" with the option that t
+    selected_mob = mob
+end)
+
+b:Button("Refresh",function()
+    table.clear(Mobs)
+    table.clear(AllMobs)
+    NoDupeMobs()
+    mobsdropdown:Refresh(Mobs)
+end)
+
+b:Toggle("Auto Mob",function(bool)
+    if bool then
+        getgenv().AutoMob = bool
+        
+        task.spawn(function()
+            while rs:Wait() do
+                if AutoMob then
+                    local current_zone = GetCurrentZone()
+                    local char = lp.Character or lp.CharacterAdded:Wait()
+                    
+                    if char and AutoMob and current_zone then
+                        for i,v in pairs(game:GetService("Workspace")["_ENEMIES"][current_zone]:GetChildren()) do
+                            if v:IsA("Model") and v.Name == tostring(selected_mob) then
+                                local MobHumanoid = tonumber(v["_stats"]:FindFirstChild("current_hp").Value)
+                                local PlrHumanoid = char:WaitForChild("Humanoid")
+                                if (MobHumanoid and PlrHumanoid) and (MobHumanoid > 0 and PlrHumanoid.Health > 0) then
+                                    local MobRootPart = v:WaitForChild("HumanoidRootPart")
+                                    local PlrRootPart = char:WaitForChild("HumanoidRootPart")
+                                    repeat
+                                    task.wait()
+                                    MobHumanoid = tonumber(v["_stats"]:FindFirstChild("current_hp").Value)
+                                    TweenToTarget(MobRootPart.CFrame + MobRootPart.CFrame.lookVector * -3)
+                                    until (not MobHumanoid or not PlrHumanoid or not MobRootPart or not PlrRootPart) or (MobHumanoid <= 0 or PlrHumanoid.Health <= 0) or (not AutoMob)
+                                end
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+    else
+        getgenv().AutoMob = bool
+    end
+end)
+
+b:Toggle("Auto Quest",function(bool)
+    if bool then
+        if lp.PlayerGui.Notification:FindFirstChild("Messages").Visible then
+            lp.PlayerGui.Notification.Messages.Visible = false
+        end
+        
+        getgenv().AutoQuest = bool
+        
+        task.spawn(function()
+            while AutoQuest do
+                local args = {[1] = {[1] = "Quest"}}
+                game:GetService("ReplicatedStorage").Remotes.Server:FireServer(unpack(args))
+                task.wait(1)
+            end
+        end)
+    else
+        getgenv().AutoQuest = bool
+        lp.PlayerGui.Notification.Messages.Visible = true
+    end
+end)
+
+b:Toggle("Auto Class",function(bool)
+    if bool then
+        if lp.PlayerGui.Notification:FindFirstChild("Messages").Visible then
+            lp.PlayerGui.Notification.Messages.Visible = false
+        end
+        
+        getgenv().AutoClass = bool
+        
+        task.spawn(function()
+            while AutoClass do
+                Class()
+                task.wait(1)
+            end
+        end)
+    else
+        getgenv().AutoClass = bool
+        lp.PlayerGui.Notification.Messages.Visible = true
+    end
+end)
+
+
+c:Dropdown("Which Egg?",{unpack(ZonesName)},true,function(mob) --true/false, replaces the current title "Dropdown" with the option that t
+    selected_zone = mob
+    Notifier("Hey !", "If you use the AutoHatch then you have to be next to the egg, ty :)")
+end)
+
+c:Toggle("Auto Hatch",function(bool)
+    if bool then
+        getgenv().AutoHatch = bool
+        
+        task.spawn(function()
+            while AutoHatch do
+                if selected_zone then
+                    Hatch(selected_zone)
+                    task.wait()
+                end
+            end
+        end)
+    else
+        getgenv().AutoHatch = bool
+    end
+end)
+
+c:Toggle("Auto EquipBest",function(bool)
+    if bool then
+        getgenv().EquipBest = bool
+        
+        task.spawn(function()
+            local a = lp.PlayerGui.CenterUI.Pets.Main.Top.EquipBest
+            while EquipBest do
+                for i,v in pairs(getconnections(a.MouseButton1Click)) do
+                    v:Fire()
+                end
+            task.wait(2)
+            end
+        end)
+    else
+        getgenv().EquipBest = bool
+    end
+end)
+
+d:Button("Claim Achievements",function()
+    for i,v in pairs(lp.PlayerGui.CenterUI.Achievements.Main.Scroll:GetChildren()) do
+        if v:IsA("ImageLabel") then
+            ClaimAchievement(v.Name)
+            task.wait()
+        end 
+    end
+end)
+
+d:Button("Redeem Codes",function()
+    local Codes = {"update8", "subopen", "opensamu"}
+    
+    for i, code in Codes do
+        Redeem(code)
+        task.wait()
+    end
+end)
+
+-- Others
+
+e:Label("UI : Wally UI V3",{
+    TextSize = 20; -- Self Explaining
+    TextColor = Color3.fromRGB(255,255,255); -- Self Explaining
+    BgColor = Color3.fromRGB(69,69,69); -- Self Explaining
+    
+})
+
+e:Label("Made by : Sakai#7392",{
+    TextSize = 20; -- Self Explaining
+    TextColor = Color3.fromRGB(255,255,255); -- Self Explaining
+    BgColor = Color3.fromRGB(69,69,69); -- Self Explaining
+    
+})
+
+e:Label("Need help? / You have suggestions?",{
+    TextSize = 13; -- Self Explaining
+    TextColor = Color3.fromRGB(255,255,255); -- Self Explaining
+    BgColor = Color3.fromRGB(69,69,69); -- Self Explaining
+    
+})
+
+e:Button("join my Discord :)",function()
+    setclipboard("discord.gg/nSCSGth9Q5")
+end)
