@@ -5,9 +5,15 @@ local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHept
 local Window = Library.CreateLib("Anime Tales | Private Script 🔒", "Midnight")
 local Tab = Window:NewTab("Farm Section")
 local Tab2 = Window:NewTab("Boss Section")
+local Tab3 = Window:NewTab("Summon Section")
+local Tab4 = Window:NewTab("Player Section")
 
-local Section = Tab:NewSection("Farm Section")
-local Section2 = Tab2:NewSection("Boss Section")
+local Section = Tab:NewSection("Stats Farming")
+local Section01 = Tab:NewSection("NPC Farming")
+
+local Section2 = Tab2:NewSection("Boss Farming")
+local Section3 = Tab3:NewSection("Summon Farming")
+local Section4 = Tab4:NewSection("Player Section")
 
 -- Variables
 
@@ -23,6 +29,8 @@ local restart_loop
 
 local boss_started
 local choosed_boss
+
+local nombre_summon = 1
 
 local QueueButton = game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Panel.Buttons:FindFirstChild("QueueButton")
 local LeaveButton = game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Panel.Buttons:FindFirstChild("LeaveQueueButton")
@@ -110,6 +118,8 @@ Section:NewDropdown("Choisi la zone à farmer", "t'as besoin de savoir quoi?", {
         choosed_weapon = "strength"
     elseif tostring(currentOption):match("Defense") then
         choosed_weapon = "defense"
+    elseif tostring(currentOption):match("Speed") then
+        choosed_weapon = "speed"
     end
     warn(choosed_weapon)
     warn(island_zone)
@@ -226,6 +236,7 @@ Section2:NewToggle("Auto Boss 💼", "ToggleInfo", function(state)
                             if Boss.Health.Value > 0 then
                                 game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-10616.5556640625, 73.52395629882812, -41907.953125)
                                 if not sword_priority then
+                                    ChangeWeapon("strength")
                                     ClickMouse()
                                 end
                             else
@@ -241,4 +252,39 @@ Section2:NewToggle("Auto Boss 💼", "ToggleInfo", function(state)
         getgenv().AutoBoss = false
         boss_started = false
     end
+end)
+
+Section3:NewSlider("Combien à la fois?", "SliderInfo", 5, 1, function(s)
+    nombre_summon = s
+end)
+
+Section3:NewToggle("Auto Summon", "ToggleInfo", function(state)
+    if state then
+        getgenv().AutoSummon = state
+
+        task.spawn(function()
+            while task.wait() do
+                if AutoSummon then
+                    local args = {[1] = "rollGacha",[2] = nombre_summon}
+                    game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("PlayerCommunication"):FireServer(unpack(args))
+                    task.wait(5)
+                end
+            end
+        end)
+    else
+        getgenv().AutoSummon = state
+    end
+end)
+
+
+Section4:NewSlider("Choisi ta rapidité", "SliderInfo", 500, 0, function(s)
+    game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = s
+end)
+
+Section4:NewSlider("Puissance du Saut", "SliderInfo", 250, 0, function(s)
+    game.Players.LocalPlayer.Character.Humanoid.JumpPower = s
+end)
+
+Section4:NewButton("Infinite Yield", "ButtonInfo", function()
+    loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
 end)
