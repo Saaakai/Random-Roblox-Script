@@ -293,8 +293,10 @@ Section01:NewToggle("Auto Citizen", "ToggleInfo", function(state)
     end
 end)
 
+local cd = false
 Section2:NewDropdown("Choisi le boss", "oui", {unpack(Boss)}, function(currentOption)
     choosed_boss = currentOption
+    cd = false
 end)
 
 Section2:NewDropdown("Quelle Arme? 🔫", "oui", {"Epée", "Poing"}, function(currentOption)
@@ -308,13 +310,41 @@ Section2:NewToggle("Auto Boss 💼", "ToggleInfo", function(state)
         task.spawn(function()
             while task.wait() do
                 if AutoBoss then
-                    if JoinQueue() and not LeaveButton.Visible then
-                        if game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Visible then
-                            click(QueueButton)
-                            task.wait(1)
-                            game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Visible = false
-                        else
+                    if choosed_boss == "Kaido" then
+                        if cd == false then
                             game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Visible = true
+                            task.wait(.75)
+                            click(game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Tabs.dragonEmperor.Button)
+                            task.wait(.75)
+                            game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Visible = false
+                            cd = true
+                        end
+                        if JoinQueue() and not LeaveButton.Visible then
+                            if game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Visible then
+                                click(QueueButton)
+                                task.wait(1)
+                                game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Visible = false
+                            else
+                                game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Visible = true
+                            end
+                        end
+                    elseif choosed_boss == "Big Mom" then
+                        if cd == false then
+                            game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Visible = true
+                            task.wait(.75)
+                            click(game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Tabs.yourMama.Button)
+                            task.wait(.75)
+                            game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Visible = false
+                            cd = true
+                        end
+                        if JoinQueue() and not LeaveButton.Visible then
+                            if game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Visible then
+                                click(QueueButton)
+                                task.wait(1)
+                                game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Visible = false
+                            else
+                                game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Visible = true
+                            end
                         end
                     end
                     
@@ -353,7 +383,7 @@ Section2:NewToggle("Auto Boss 💼", "ToggleInfo", function(state)
                                 local Boss = game:GetService("Workspace").WorldObjects.Bosses:FindFirstChild("dragonEmperor")
                                 if Boss and Boss:WaitForChild("Health") and Boss:WaitForChild("RootPart") then
                                     if Boss.Health.Value > 0 then
-                                        if #game:GetService("Workspace").WorldObjects.BossObjects.dragonEmperor:GetChildren() > 0 then
+                                        if #game:GetService("Workspace").WorldObjects.BossObjects.dragonEmperor:GetChildren() > 3 then
                                             game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-43438.66015625, 389.6992492675781, -41158.421875)
                                         else
                                             game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-43447.72265625, 83.1195297241211, -41150.00390625)
