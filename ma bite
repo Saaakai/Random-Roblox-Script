@@ -2,18 +2,24 @@
 
 local Library = loadstring(game:HttpGet("https://raw.githubusercontent.com/xHeptc/Kavo-UI-Library/main/source.lua"))()
 
-local Window = Library.CreateLib("Anime Tales | Private Script 🔒", "Midnight")
+local Window = Library.CreateLib("Anime Tales | Private Script 🔒", "DarkTheme")
 local Tab = Window:NewTab("Farm Section")
 local Tab2 = Window:NewTab("Boss Section")
 local Tab3 = Window:NewTab("Summon Section")
 local Tab4 = Window:NewTab("Player Section")
+local Tab5 = Window:NewTab("Teleport Section")
 
 local Section = Tab:NewSection("Stats Farming")
 local Section01 = Tab:NewSection("NPC Farming")
 
 local Section2 = Tab2:NewSection("Boss Farming")
+local Section21 = Tab2:NewSection("Skills Section")
+
 local Section3 = Tab3:NewSection("Summon Farming")
 local Section4 = Tab4:NewSection("Player Section")
+
+local Section5 = Tab5:NewSection("Place Teleport Section")
+local Section51 = Tab5:NewSection("NPC Teleport Section")
 
 -- Variables
 
@@ -23,14 +29,23 @@ local lp = Players.LocalPlayer
 local choosed_zone
 local island_zone
 local choosed_weapon
-local sword_priority = false
 
+local sword_priority = false
 local restart_loop
 
 local boss_started
 local choosed_boss
+local boss_weapon
+local using_skill = false
 
 local nombre_summon = 1
+local portail
+
+local tp_choosed_zone
+local tp_choosed_island
+local tp_choosed_npc
+
+local reach = 5
 
 local QueueButton = game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Panel.Buttons:FindFirstChild("QueueButton")
 local LeaveButton = game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Panel.Buttons:FindFirstChild("LeaveQueueButton")
@@ -62,6 +77,8 @@ local Islands = {
     },
 }
 
+local Summons = {"featured", "battlepass"}
+
 local Zones = {}
 for i,v in pairs(game:GetService("Workspace").WorldObjects.TrainingZones:GetChildren()) do
 	if v:IsA("Model") then
@@ -70,7 +87,14 @@ for i,v in pairs(game:GetService("Workspace").WorldObjects.TrainingZones:GetChil
 end
 table.sort(Zones)
 
-local Boss = {"Ta maman", "Ton père"}
+local Boss = {"Big Mom", "Kaido"}
+
+local NPCs = {}
+for i,v in pairs(game:GetService("Workspace").WorldObjects.NPCs.Standard:GetChildren()) do
+    if v:IsA("Model") then
+        table.insert(NPCs, v.Name)
+    end
+end
 
 -- Functions
 
@@ -106,6 +130,22 @@ local function JoinQueue()
     return false
 end
 
+local function GetNearestMob()
+    local distance, maxdistance, mobhrp = nil, math.huge, nil
+    
+    for i,v in pairs(game:GetService("Workspace").WorldObjects.NPCs.Citizens:GetDescendants()) do
+        if v:IsA("Part") and v.Name == "HumanoidRootPart" then
+            if v.Parent:FindFirstChild("Humanoid").Health > 0 then
+                distance = (lp.Character.HumanoidRootPart.Position - v.Position).Magnitude
+                if distance < maxdistance then
+                    maxdistance = distance
+                    mobhrp = v
+                end
+            end
+        end
+    end
+    return mobhrp
+end
 
 -- Main
 
@@ -151,7 +191,7 @@ Section:NewToggle("Start Farming 🌌", "jsp", function(state)
                                     repeat
                                         for k, cframes in pairs(Islands[tostring(island_zone)]) do
                                             hrp.CFrame = cframes
-                                            task.wait(.1)
+                                            task.wait()
                                         end
                                     until game:GetService("Workspace").WorldObjects.TrainingZones[choosed_zone]:FindFirstChild("BoundingBox")
                                 end
@@ -163,6 +203,17 @@ Section:NewToggle("Start Farming 🌌", "jsp", function(state)
 
                             repeat
                                 task.wait()
+
+                                if choosed_weapon == "speed" and not boss_started then
+                                    game:GetService('VirtualInputManager'):SendKeyEvent(true,'LeftShift',false,game)
+                                    game:GetService('VirtualInputManager'):SendKeyEvent(true,'W',false,game)
+    
+                                    task.spawn(function()
+                                        hrp.CFrame = game:GetService("Workspace").WorldObjects.TrainingZones[choosed_zone]:FindFirstChild("BoundingBox").CFrame + Vector3.new(-10, 10, 0)
+                                        task.wait(2)
+                                    end)
+                                end
+
                                 if not sword_priority then
                                     ChangeWeapon(choosed_weapon)
                                 end
@@ -173,6 +224,7 @@ Section:NewToggle("Start Farming 🌌", "jsp", function(state)
                                         task.wait(.75)
                                     end)
                                 end
+
                             until boss_started or not AutoFarmZone
                         end
                     end
@@ -189,9 +241,11 @@ end)
 Section:NewToggle("Farm Sword ⚔️", "ToggleInfo", function(state)
     if state then
         getgenv().FarmSword = state
+        sword_priority = state
+
         task.spawn(function()
-            while task.wait() do
-                if FarmSword then
+            while task.wait(.75) do
+                if FarmSword and not boss_started then
                     sword_priority = true
                     ChangeWeapon("weapon")
                     ClickMouse()
@@ -200,14 +254,52 @@ Section:NewToggle("Farm Sword ⚔️", "ToggleInfo", function(state)
         end)
     else
         getgenv().FarmSword = state
-        sword_priority = false
+        sword_priority = state
     end
 end)
 
-Section2:NewDropdown("Choisi tes parents 👪", "oui", {unpack(Boss)}, function(currentOption)
+Section01:NewSlider("Reach", "SliderInfo", 10, 5, function(s)
+    reach = s
+end)
+
+Section01:NewToggle("Auto Citizen", "ToggleInfo", function(state)
+    if state then
+        getgenv().AutoCitizen = state
+        
+        task.spawn(function()
+            while task.wait() do
+                if AutoCitizen then
+                    local char = lp.Character or lp.CharacterAdded:Wait()
+
+                    if char and AutoCitizen then
+                        local hum = char:WaitForChild("Humanoid")
+                        if hum and hum.Health > 0 then
+                            local mobhrp = GetNearestMob()
+                            local hrp = char:FindFirstChild("HumanoidRootPart")
+                            if hrp and mobhrp then
+                                repeat
+                                    task.wait()
+                                    hrp.CFrame = mobhrp.CFrame + mobhrp.CFrame.lookVector * - reach
+                                    ClickMouse()
+                                until (not mobhum or not hum or not mobhrp or not hrp) or (mobhum.Health <= 0 or hum.Health <= 0) or boss_started or not AutoCitizen
+                            end
+                        end
+                    end
+                end
+            end
+        end)
+    else
+        getgenv().AutoCitizen = state
+    end
+end)
+
+Section2:NewDropdown("Choisi le boss", "oui", {unpack(Boss)}, function(currentOption)
     choosed_boss = currentOption
 end)
 
+Section2:NewDropdown("Quelle Arme? 🔫", "oui", {"Epée", "Poing"}, function(currentOption)
+    boss_weapon = currentOption
+end)
 
 Section2:NewToggle("Auto Boss 💼", "ToggleInfo", function(state)
     if state then
@@ -220,10 +312,6 @@ Section2:NewToggle("Auto Boss 💼", "ToggleInfo", function(state)
                         if game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Visible then
                             click(QueueButton)
                             task.wait(1)
-                            boss_started = true
-                            if not sword_priority then
-                                ChangeWeapon("strength")
-                            end
                             game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Visible = false
                         else
                             game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Visible = true
@@ -231,17 +319,26 @@ Section2:NewToggle("Auto Boss 💼", "ToggleInfo", function(state)
                     end
                     
                     if game:GetService("Workspace").WorldObjects.Bosses:FindFirstChild("yourMama") then
-                        local Boss = game:GetService("Workspace").WorldObjects.Bosses:FindFirstChild("yourMama")
-                        if Boss and Boss:WaitForChild("Health") and Boss:WaitForChild("RootPart") then
-                            if Boss.Health.Value > 0 then
-                                game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-10616.5556640625, 73.52395629882812, -41907.953125)
-                                if not sword_priority then
-                                    ChangeWeapon("strength")
-                                    ClickMouse()
+                        boss_started = true
+                        local char = lp.Character or lp.CharacterAdded:Wait()
+                        local hrp = char:WaitForChild("HumanoidRootPart")
+                        local hum = char:WaitForChild("Humanoid")
+                        if hrp and hum then
+                            local Boss = game:GetService("Workspace").WorldObjects.Bosses:FindFirstChild("yourMama")
+                            if Boss and Boss:WaitForChild("Health") and Boss:WaitForChild("RootPart") then
+                                if Boss.Health.Value > 0 then
+                                    game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-10616.5556640625, 73.52395629882812, -41907.953125)
+                                    if boss_weapon == "Epée" then
+                                        ChangeWeapon("weapon")
+                                        ClickMouse()
+                                    elseif boss_weapon == "Poing" then
+                                        ChangeWeapon("strength")
+                                        ClickMouse()
+                                    end
+                                else
+                                    boss_started = false
+                                    restart_loop = true
                                 end
-                            else
-                                boss_started = false
-                                restart_loop = true
                             end
                         end
                     end
@@ -254,6 +351,114 @@ Section2:NewToggle("Auto Boss 💼", "ToggleInfo", function(state)
     end
 end)
 
+Section21:NewToggle("Auto Skill Z", "ToggleInfo", function(state)
+    if state then
+        getgenv().AutoSkillZ = state
+
+        while AutoSkillZ and task.wait(math.random(2, 3)) do
+            if boss_started then
+                local char = lp.Character or lp.CharacterAdded
+
+                local hrp = char:FindFirstChild("HumanoidRootPart")
+                local hum = char:FindFirstChild("Humanoid")
+                if hrp and hum.Health > 0 then
+                    game:GetService('VirtualInputManager'):SendKeyEvent(true,'Z',false,game)
+                end
+            end
+        end
+    else
+        getgenv().AutoSkillZ = state
+    end
+end)
+
+Section21:NewToggle("Auto Skill X", "ToggleInfo", function(state)
+    if state then
+        getgenv().AutoSkillX = state
+
+        while AutoSkillX and task.wait(math.random(2, 3)) do
+            if boss_started then
+                local char = lp.Character or lp.CharacterAdded
+
+                local hrp = char:FindFirstChild("HumanoidRootPart")
+                local hum = char:FindFirstChild("Humanoid")
+                if hrp and hum.Health > 0 then
+                    game:GetService('VirtualInputManager'):SendKeyEvent(true,'X',false,game)
+                end
+            end
+        end
+    else
+        getgenv().AutoSkillX = state
+    end
+end)
+
+
+Section21:NewToggle("Auto Skill C", "ToggleInfo", function(state)
+    if state then
+        getgenv().AutoSkillC = state
+
+        while AutoSkillC and task.wait(math.random(2, 3)) do
+            if boss_started then
+                local char = lp.Character or lp.CharacterAdded
+
+                local hrp = char:FindFirstChild("HumanoidRootPart")
+                local hum = char:FindFirstChild("Humanoid")
+                if hrp and hum.Health > 0 then
+                    game:GetService('VirtualInputManager'):SendKeyEvent(true,'C',false,game)
+                end
+            end
+        end
+    else
+        getgenv().AutoSkillC = state
+    end
+end)
+
+
+Section21:NewToggle("Auto Skill V", "ToggleInfo", function(state)
+    if state then
+        getgenv().AutoSkillV = state
+
+        while AutoSkillV and task.wait(math.random(2, 3)) do
+            if boss_started then
+                local char = lp.Character or lp.CharacterAdded
+
+                local hrp = char:FindFirstChild("HumanoidRootPart")
+                local hum = char:FindFirstChild("Humanoid")
+                if hrp and hum.Health > 0 then
+                    game:GetService('VirtualInputManager'):SendKeyEvent(true,'V',false,game)
+                end
+            end
+        end
+    else
+        getgenv().AutoSkillV = state
+    end
+end)
+
+
+Section21:NewToggle("Auto Skill B", "ToggleInfo", function(state)
+    if state then
+        getgenv().AutoSkillB = state
+
+        while AutoSkillB and task.wait(math.random(2, 3)) do
+            if boss_started then
+                local char = lp.Character or lp.CharacterAdded
+
+                local hrp = char:FindFirstChild("HumanoidRootPart")
+                local hum = char:FindFirstChild("Humanoid")
+                if hrp and hum.Health > 0 then
+                    game:GetService('VirtualInputManager'):SendKeyEvent(true,'B',false,game)
+                end
+            end
+        end
+    else
+        getgenv().AutoSkillB = state
+    end
+end)
+
+
+Section3:NewDropdown("Quel Portail?", "DropdownInf", {unpack(Summons)}, function(currentOption)
+    portail = currentOption
+end)
+
 Section3:NewSlider("Combien à la fois?", "SliderInfo", 5, 1, function(s)
     nombre_summon = s
 end)
@@ -263,10 +468,10 @@ Section3:NewToggle("Auto Summon", "ToggleInfo", function(state)
         getgenv().AutoSummon = state
 
         task.spawn(function()
-            while task.wait() do
+            while task.wait(2) do
                 if AutoSummon then
-                    local args = {[1] = "rollGacha",[2] = nombre_summon}
-                    game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("PlayerCommunication"):FireServer(unpack(args))
+                    local args = {[1] = "rollGacha",[2] = portail,[3] = nombre_summon}
+                    game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("PlayerCommunication"):FireServer(unpack(args))                    
                     task.wait(5)
                 end
             end
@@ -276,6 +481,11 @@ Section3:NewToggle("Auto Summon", "ToggleInfo", function(state)
     end
 end)
 
+Section4:NewButton("Anti AFK", "ButtonInfo", function()
+    for i,v in pairs(getconnections(game:GetService("Players").LocalPlayer.Idled)) do
+        v:Disable()
+    end
+end)
 
 Section4:NewSlider("Choisi ta rapidité", "SliderInfo", 500, 0, function(s)
     game.Players.LocalPlayer.Character.Humanoid.WalkSpeed = s
@@ -287,4 +497,51 @@ end)
 
 Section4:NewButton("Infinite Yield", "ButtonInfo", function()
     loadstring(game:HttpGet('https://raw.githubusercontent.com/EdgeIY/infiniteyield/master/source'))()
+end)
+
+Section5:NewDropdown("Choisi l'endroit", "DropdownInf", {unpack(Zones)}, function(currentOption)
+    tp_choosed_zone = currentOption
+    tp_choosed_island = FindIsland(currentOption)
+
+    warn(tp_choosed_zone)
+    warn(tp_choosed_island)
+end)
+
+Section5:NewButton("Teleport", "ButtonInfo", function()
+    if tp_choosed_island and tp_choosed_zone ~= nil then
+        for island, v in pairs(Islands) do
+            if island == tp_choosed_island then
+                repeat
+                    for k, cframes in pairs(Islands[tostring(tp_choosed_island)]) do
+                        lp.Character.HumanoidRootPart.CFrame = cframes
+                        task.wait()
+                    end
+                until game:GetService("Workspace").WorldObjects.TrainingZones[tp_choosed_zone]:FindFirstChild("BoundingBox")
+            end
+        end
+
+        if game:GetService("Workspace").WorldObjects.TrainingZones[tp_choosed_zone]:FindFirstChild("BoundingBox") then
+            lp.Character.HumanoidRootPart.CFrame = game:GetService("Workspace").WorldObjects.TrainingZones[tp_choosed_zone]:FindFirstChild("BoundingBox").CFrame + Vector3.new(-10, 10, 0)
+        end
+    end
+end)
+
+Section51:NewDropdown("Choisi le NPC", "DropdownInf", {unpack(NPCs)}, function(currentOption)
+    tp_choosed_npc = currentOption
+end)
+
+Section51:NewButton("Teleport", "ButtonInfo", function()
+    if tp_choosed_npc ~= nil then
+        for i,v in pairs(game:GetService("Workspace").WorldObjects.NPCs.Standard:GetChildren()) do
+            if v.Name == tostring(tp_choosed_npc) then
+                if v:FindFirstChild("HumanoidRootPart") then
+                    lp.Character.HumanoidRootPart.CFrame = v.HumanoidRootPart.CFrame
+                elseif v:FindFirstChild("RootPart") then
+                    lp.Character.HumanoidRootPart.CFrame = v.RootPart.CFrame
+                elseif v:FindFirstChild("Head") then
+                    lp.Character.HumanoidRootPart.CFrame = v.Head.CFrame
+                end
+            end
+        end
+    end
 end)
