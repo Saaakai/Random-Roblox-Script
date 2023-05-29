@@ -8,6 +8,7 @@ local Tab2 = Window:NewTab("Boss Section")
 local Tab3 = Window:NewTab("Summon Section")
 local Tab4 = Window:NewTab("Player Section")
 local Tab5 = Window:NewTab("Teleport Section")
+local Tab6 = Window:NewTab("Autres")
 
 local Section = Tab:NewSection("Stats Farming")
 local Section01 = Tab:NewSection("NPC Farming")
@@ -20,6 +21,9 @@ local Section4 = Tab4:NewSection("Player Section")
 
 local Section5 = Tab5:NewSection("Place Teleport Section")
 local Section51 = Tab5:NewSection("NPC Teleport Section")
+
+local Section6 = Tab6:NewSection("Autres")
+
 
 -- Variables
 
@@ -608,5 +612,27 @@ Section51:NewButton("Teleport", "ButtonInfo", function()
                 end
             end
         end
+    end
+end)
+
+Section6:NewToggle("Auto Fish", "ToggleInfo", function(state)
+    if state then
+        getgenv().AutoFish = state
+
+        lp.Character.HumanoidRootPart.Position = Vector3.new(1570, 40, 2014)
+        task.wait(1)
+        local args = {[1] = "startFishing",[2] = 2.5026674270629883}
+        game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("PlayerCommunication"):FireServer(unpack(args))
+        task.spawn(function()
+            while task.wait(1) do
+                if AutoFish then
+                    local args = {[1] = "fishingResult",[2] = true}
+                    game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("PlayerCommunication"):FireServer(unpack(args))
+                end
+            end
+        end)
+
+    else
+        getgenv().AutoFish = state
     end
 end)
