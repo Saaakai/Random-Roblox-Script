@@ -91,7 +91,7 @@ for i,v in pairs(game:GetService("Workspace").WorldObjects.TrainingZones:GetChil
 end
 table.sort(Zones)
 
-local Boss = {"Big Mom", "Kaido"}
+local Boss = {"yourMama", "dragonEmperor"}
 
 local NPCs = {}
 for i,v in pairs(game:GetService("Workspace").WorldObjects.NPCs.Standard:GetChildren()) do
@@ -114,7 +114,7 @@ end
 
 local function ClickMouse()
     local args = {[1] = "mouse1Pressed"}
-     game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("CombatCommunication"):FireServer(unpack(args))    
+    game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("CombatCommunication"):FireServer(unpack(args))    
 end
 
 local function click(a)
@@ -314,40 +314,37 @@ Section2:NewToggle("Auto Boss 💼", "ToggleInfo", function(state)
         task.spawn(function()
             while task.wait() do
                 if AutoBoss then
-                    if choosed_boss == "Les deux" then
-
-                    end
-                    if choosed_boss == "Kaido" then
+                    if choosed_boss == "dragonEmperor" then
                         if cd == false then
                             game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Visible = true
-                            task.wait(.75)
+                            task.wait()
                             click(game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Tabs.dragonEmperor.Button)
-                            task.wait(.75)
+                            task.wait()
                             game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Visible = false
                             cd = true
                         end
                         if JoinQueue() and not LeaveButton.Visible then
                             if game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Visible then
                                 click(QueueButton)
-                                task.wait(1)
+                                task.wait(.5)
                                 game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Visible = false
                             else
                                 game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Visible = true
                             end
                         end
-                    elseif choosed_boss == "Big Mom" then
+                    elseif choosed_boss == "yourMama" then
                         if cd == false then
                             game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Visible = true
-                            task.wait(.75)
+                            task.wait()
                             click(game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Tabs.yourMama.Button)
-                            task.wait(.75)
+                            task.wait()
                             game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Visible = false
                             cd = true
                         end
                         if JoinQueue() and not LeaveButton.Visible then
                             if game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Visible then
                                 click(QueueButton)
-                                task.wait(1)
+                                task.wait(.5)
                                 game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Visible = false
                             else
                                 game:GetService("Players").LocalPlayer.PlayerGui.UI.Bosses.Visible = true
@@ -355,7 +352,7 @@ Section2:NewToggle("Auto Boss 💼", "ToggleInfo", function(state)
                         end
                     end
                     
-                    if choosed_boss == "Big Mom" then
+                    if choosed_boss == "yourMama" then
                         if game:GetService("Workspace").WorldObjects.Bosses:FindFirstChild("yourMama") then
                             boss_started = true
                             local char = lp.Character or lp.CharacterAdded:Wait()
@@ -380,7 +377,7 @@ Section2:NewToggle("Auto Boss 💼", "ToggleInfo", function(state)
                                 end
                             end
                         end
-                    elseif choosed_boss == "Kaido" then
+                    elseif choosed_boss == "dragonEmperor" then
                         if game:GetService("Workspace").WorldObjects.Bosses:FindFirstChild("dragonEmperor") then
                             boss_started = true
                             local char = lp.Character or lp.CharacterAdded:Wait()
@@ -392,6 +389,10 @@ Section2:NewToggle("Auto Boss 💼", "ToggleInfo", function(state)
                                     if Boss.Health.Value > 0 then
                                         if #game:GetService("Workspace").WorldObjects.BossObjects.dragonEmperor:GetChildren() > 3 then
                                             game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-43438.66015625, 389.6992492675781, -41158.421875)
+                                            task.wait(3.5)
+                                            for i,v in pairs(game:GetService("Workspace").WorldObjects.BossObjects.dragonEmperor:GetChildren()) do
+                                                v:Destroy()
+                                            end
                                         else
                                             game.Players.LocalPlayer.Character.HumanoidRootPart.CFrame = CFrame.new(-43447.72265625, 83.1195297241211, -41150.00390625)
                                         end                                        
@@ -409,6 +410,9 @@ Section2:NewToggle("Auto Boss 💼", "ToggleInfo", function(state)
                                     end
                                 end
                             end
+                        else
+                            boss_started = false
+                            restart_loop = true
                         end
                     end
                 end
@@ -551,9 +555,25 @@ Section3:NewToggle("Auto Summon", "ToggleInfo", function(state)
 end)
 
 Section4:NewButton("Anti AFK", "ButtonInfo", function()
-    for i,v in pairs(getconnections(game:GetService("Players").LocalPlayer.Idled)) do
-        v:Disable()
-    end
+    wait(0.5)local ba=Instance.new("ScreenGui")
+    local ca=Instance.new("TextLabel")local da=Instance.new("Frame")
+    local _b=Instance.new("TextLabel")local ab=Instance.new("TextLabel")ba.Parent=game.CoreGui
+    ba.ZIndexBehavior=Enum.ZIndexBehavior.Sibling;ca.Parent=ba;ca.Active=true
+    ca.BackgroundColor3=Color3.new(0.176471,0.176471,0.176471)ca.Draggable=true
+    ca.Position=UDim2.new(0.698610067,0,0.098096624,0)ca.Size=UDim2.new(0,304,0,52)
+    ca.Font=Enum.Font.SourceSansSemibold;ca.Text="Anti Afk Kick Script"ca.TextColor3=Color3.new(0,1,1)
+    ca.TextSize=22;da.Parent=ca
+    da.BackgroundColor3=Color3.new(0.196078,0.196078,0.196078)da.Position=UDim2.new(0,0,1.0192306,0)
+    da.Size=UDim2.new(0,304,0,107)_b.Parent=da
+    _b.BackgroundColor3=Color3.new(0.176471,0.176471,0.176471)_b.Position=UDim2.new(0,0,0.800455689,0)
+    _b.Size=UDim2.new(0,304,0,21)_b.Font=Enum.Font.Arial;_b.Text="Salut mec!!!!!!!!!!!!!!!!!!!!"
+    _b.TextColor3=Color3.new(1,1,1)_b.TextSize=20;ab.Parent=da
+    ab.BackgroundColor3=Color3.new(0.176471,0.176471,0.176471)ab.Position=UDim2.new(0,0,0.158377379,0)
+    ab.Size=UDim2.new(0,304,0,44)ab.Font=Enum.Font.ArialBold;ab.Text="Status: Script Started"
+    ab.TextColor3=Color3.new(1,1,1)ab.TextSize=20;local bb=game:service'VirtualUser'
+    game:service'Players'.LocalPlayer.Idled:connect(function()
+    bb:CaptureController()bb:ClickButton2(Vector2.new())
+    ab.Text="You went idle and ROBLOX tried to kick you but we reflected it!"wait(2)ab.Text="Script Re-Enabled"end)
 end)
 
 Section4:NewSlider("Choisi ta rapidité", "SliderInfo", 500, 0, function(s)
@@ -619,15 +639,26 @@ Section6:NewToggle("Auto Fish", "ToggleInfo", function(state)
     if state then
         getgenv().AutoFish = state
 
-        lp.Character.HumanoidRootPart.Position = Vector3.new(1570, 40, 2014)
-        task.wait(1)
-        local args = {[1] = "startFishing",[2] = 2.5026674270629883}
-        game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("PlayerCommunication"):FireServer(unpack(args))
         task.spawn(function()
-            while task.wait(1) do
-                if AutoFish then
-                    local args = {[1] = "fishingResult",[2] = true}
-                    game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("PlayerCommunication"):FireServer(unpack(args))
+            while task.wait() do
+                if AutoFish and not boss_started then
+                    if restart_loop then
+                        task.wait(10)
+                        restart_loop = false
+                    end
+
+                    for i = 1, 10 do
+                        lp.Character.HumanoidRootPart.Position = Vector3.new(math.random(1570, 1572), 40, 2014)
+                        task.wait(.2)
+                        local args = {[1] = "startFishing",[2] = 2.5026674270629883}
+                        game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("PlayerCommunication"):FireServer(unpack(args))
+                    end
+
+                    repeat
+                        task.wait(.5)
+                        local args = {[1] = "fishingResult",[2] = true}
+                        game:GetService("ReplicatedStorage"):WaitForChild("Remotes"):WaitForChild("PlayerCommunication"):FireServer(unpack(args))
+                    until not AutoFish or boss_started
                 end
             end
         end)
