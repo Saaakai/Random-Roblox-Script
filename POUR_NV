@@ -1,0 +1,177 @@
+local library = loadstring(game:HttpGet("https://raw.githubusercontent.com/teppyboy/RbxScripts/master/Misc/UI_Libraries/Zypher/Library.lua"))()
+
+local productData = {
+    [2676768532] = { Id = 2676768532, VendorId = "\233\135\145\229\184\1291", Name = "Money 1", Price = 29, ProductType = "DeveloperProducts" },
+    [2676768691] = { Id = 2676768691, VendorId = "\233\135\145\229\184\1292", Name = "Money 2", Price = 99, ProductType = "DeveloperProducts" },
+    [2676768806] = { Id = 2676768806, VendorId = "\233\135\145\229\184\1293", Name = "Money 3", Price = 299, ProductType = "DeveloperProducts" },
+    [2676768962] = { Id = 2676768962, VendorId = "\233\135\145\229\184\1294", Name = "Money 4", Price = 799, ProductType = "DeveloperProducts" },
+    [2676769098] = { Id = 2676769098, VendorId = "\233\135\145\229\184\1295", Name = "Money 5", Price = 1999, ProductType = "DeveloperProducts" },
+    [2676769252] = { Id = 2676769252, VendorId = "\233\135\145\229\184\1296", Name = "Money 6", Price = 4999, ProductType = "DeveloperProducts" },
+    [2676778226] = { Id = 2676778226, VendorId = "\233\146\187\231\159\1791", Name = "Gem 1", Price = 29, ProductType = "DeveloperProducts" },
+    [2676778300] = { Id = 2676778300, VendorId = "\233\146\187\231\159\1792", Name = "Gem 2", Price = 99, ProductType = "DeveloperProducts" },
+    [2676778366] = { Id = 2676778366, VendorId = "\233\146\187\231\159\1793", Name = "Gem 3", Price = 299, ProductType = "DeveloperProducts" },
+    [2676778451] = { Id = 2676778451, VendorId = "\233\146\187\231\159\1794", Name = "Gem 4", Price = 799, ProductType = "DeveloperProducts" },
+    [2676778583] = { Id = 2676778583, VendorId = "\233\146\187\231\159\1795", Name = "Gem 5", Price = 1999, ProductType = "DeveloperProducts" },
+    [2676778700] = { Id = 2676778700, VendorId = "\233\146\187\231\159\1796", Name = "Gem 6", Price = 4999, ProductType = "DeveloperProducts" },
+    [2676779580] = { Id = 2676779580, VendorId = "\233\135\145\229\141\161\233\153\144\232\180\173\231\164\188\229\140\133", Name = "First Purchase Package", Price = 29, ProductType = "DeveloperProducts" },
+    [2676779857] = { Id = 2676779857, VendorId = "\231\186\162\229\141\161\233\153\144\232\180\173\231\164\188\229\140\133", Name = "Monthly Card Purchase Package", Price = 699, ProductType = "DeveloperProducts" },
+    [1920894601] = { Id = 1920894601, VendorId = "\229\189\169\229\141\161\233\153\144\232\180\173\231\164\188\229\140\133", Name = "Annual Card Purchase Package", Price = 6999, ProductType = "DeveloperProducts" },
+    [2676780262] = { Id = 2676780262, VendorId = "\232\189\172\231\155\152\231\171\139\229\141\179\229\134\183\229\141\180", Name = "Account Binding Reward", Price = 9, ProductType = "DeveloperProducts" },
+    [2676780469] = { Id = 2676780469, VendorId = "\229\138\160\233\128\159\229\188\128\229\174\157\231\174\177", Name = "Speed Up Activation Code", Price = 299, ProductType = "DeveloperProducts" },
+    [1010927357] = { Id = 1010927357, VendorId = "AFK\229\143\140\229\128\141\229\165\150\229\138\177", Name = "AFK Double Reward", Price = 399, ProductType = "Passes" },
+    [2676780832] = { Id = 2676780832, VendorId = "\229\185\184\232\191\144\232\141\175\230\176\180\229\149\134\229\147\129", Name = "Teleport Herb Item", Price = 49, ProductType = "DeveloperProducts" },
+    [2676781086] = { Id = 2676781086, VendorId = "\233\171\152\231\186\167\229\185\184\232\191\144\232\141\175\230\176\180\229\149\134\229\147\129", Name = "Advanced Teleport Herb Item", Price = 299, ProductType = "DeveloperProducts" },
+    [2676781745] = { Id = 2676781745, VendorId = "\233\146\187\231\159\179\229\145\168\229\141\161", Name = "Gem Weekly Card", Price = 599, ProductType = "DeveloperProducts" },
+    [2676781875] = { Id = 2676781875, VendorId = "\233\135\145\229\184\129\229\145\168\229\141\161", Name = "Money Weekly Card", Price = 299, ProductType = "DeveloperProducts" },
+    [1133862510] = { Id = 1133862510, VendorId = "VIP", Name = "VIP", Price = 999, ProductType = "Passes" },
+    [2705170058] = { Id = 2705170058, VendorId = "\230\138\189\229\143\150\233\171\152\231\186\167\232\189\172\231\155\152\229\165\150\229\138\177", Name = "Receive Advanced Account Reward", Price = 129, ProductType = "DeveloperProducts" },
+    [2676782258] = { Id = 2676782258, VendorId = "100\231\164\188\231\137\169\229\184\129", Name = "100 Gift Money", Price = 100, ProductType = "DeveloperProducts" },
+    [2676782472] = { Id = 2676782472, VendorId = "200\231\164\188\231\137\169\229\184\129", Name = "200 Gift Money", Price = 200, ProductType = "DeveloperProducts" },
+    [2676782525] = { Id = 2676782525, VendorId = "300\231\164\188\231\137\169\229\184\129", Name = "300 Gift Money", Price = 300, ProductType = "DeveloperProducts" },
+    [2676782561] = { Id = 2676782561, VendorId = "400\231\164\188\231\137\169\229\184\129", Name = "400 Gift Money", Price = 400, ProductType = "DeveloperProducts" },
+    [2676782598] = { Id = 2676782598, VendorId = "500\231\164\188\231\137\169\229\184\129", Name = "500 Gift Money", Price = 500, ProductType = "DeveloperProducts" },
+    [2676782640] = { Id = 2676782640, VendorId = "600\231\164\188\231\137\169\229\184\129", Name = "600 Gift Money", Price = 600, ProductType = "DeveloperProducts" },
+    [2676782680] = { Id = 2676782680, VendorId = "700\231\164\188\231\137\169\229\184\129", Name = "700 Gift Money", Price = 700, ProductType = "DeveloperProducts" },
+    [2676782723] = { Id = 2676782723, VendorId = "800\231\164\188\231\137\169\229\184\129", Name = "800 Gift Money", Price = 800, ProductType = "DeveloperProducts" },
+    [2676782763] = { Id = 2676782763, VendorId = "900\231\164\188\231\137\169\229\184\129", Name = "900 Gift Money", Price = 900, ProductType = "DeveloperProducts" },
+    [2676782806] = { Id = 2676782806, VendorId = "1000\231\164\188\231\137\169\229\184\129", Name = "1000 Gift Money", Price = 1000, ProductType = "DeveloperProducts" },
+    [2676782838] = { Id = 2676782838, VendorId = "2000\231\164\188\231\137\169\229\184\129", Name = "2000 Gift Money", Price = 2000, ProductType = "DeveloperProducts" },
+    [2676782879] = { Id = 2676782879, VendorId = "3000\231\164\188\231\137\169\229\184\129", Name = "3000 Gift Money", Price = 3000, ProductType = "DeveloperProducts" },
+    [2676782936] = { Id = 2676782936, VendorId = "4000\231\164\188\231\137\169\229\184\129", Name = "4000 Gift Money", Price = 4000, ProductType = "DeveloperProducts" },
+    [2676782979] = { Id = 2676782979, VendorId = "5000\231\164\188\231\137\169\229\184\129", Name = "5000 Gift Money", Price = 5000, ProductType = "DeveloperProducts" },
+    [2705107375] = { Id = 2705107375, VendorId = "\228\185\176\230\180\187\229\138\168\232\180\167\229\184\1291_1", Name = "Growth Fund 1_1", Price = 5, ProductType = "DeveloperProducts" },
+    [2705107497] = { Id = 2705107497, VendorId = "\228\185\176\230\180\187\229\138\168\232\180\167\229\184\1291_2", Name = "Growth Fund 1_2", Price = 129, ProductType = "DeveloperProducts" },
+    [2705107589] = { Id = 2705107589, VendorId = "\228\185\176\230\180\187\229\138\168\232\180\167\229\184\1291_3", Name = "Growth Fund 1_3", Price = 499, ProductType = "DeveloperProducts" },
+    [2705107690] = { Id = 2705107690, VendorId = "\228\185\176\230\180\187\229\138\168\232\180\167\229\184\1291_4", Name = "Growth Fund 1_4", Price = 1999, ProductType = "DeveloperProducts" },
+    [2676783620] = { Id = 2676783620, VendorId = "\228\185\176\230\180\187\229\138\168\232\180\167\229\184\1292_1", Name = "Growth Fund 2_1", Price = 5, ProductType = "DeveloperProducts" },
+    [2676783699] = { Id = 2676783699, VendorId = "\228\185\176\230\180\187\229\138\168\232\180\167\229\184\1292_2", Name = "Growth Fund 2_2", Price = 29, ProductType = "DeveloperProducts" },
+    [2676783771] = { Id = 2676783771, VendorId = "\228\185\176\230\180\187\229\138\168\232\180\167\229\184\1292_3", Name = "Growth Fund 2_3", Price = 149, ProductType = "DeveloperProducts" },
+    [2676783827] = { Id = 2676783827, VendorId = "\228\185\176\230\180\187\229\138\168\232\180\167\229\184\1292_4", Name = "Growth Fund 2_4", Price = 449, ProductType = "DeveloperProducts" },
+    [2705108482] = { Id = 2705108482, VendorId = "\230\180\187\229\138\1681_\231\164\188\229\140\1332", Name = "Fund 1_Package 2", Price = 199, ProductType = "DeveloperProducts" },
+    [2705108130] = { Id = 2705108130, VendorId = "\230\180\187\229\138\1681_\231\164\188\229\140\1331", Name = "Fund 1_Package 1", Price = 1299, ProductType = "DeveloperProducts" },
+    [2705108592] = { Id = 2705108592, VendorId = "\230\180\187\229\138\1681_\231\164\188\229\140\1333", Name = "Fund 1_Package 3", Price = 199, ProductType = "DeveloperProducts" },
+    [3098561786] = { Id = 3098561786, VendorId = "\228\184\128\231\149\170\229\184\1291", Name = "Battle Pass 1", Price = 49, ProductType = "DeveloperProducts" },
+    [3098572371] = { Id = 3098572371, VendorId = "\228\184\128\231\149\170\229\184\1292", Name = "Battle Pass 2", Price = 119, ProductType = "DeveloperProducts" },
+    [3098579560] = { Id = 3098579560, VendorId = "\228\184\128\231\149\170\229\184\1293", Name = "Battle Pass 3", Price = 299, ProductType = "DeveloperProducts" }
+}
+
+local main = library:CreateMain({
+    projName = "Mail Gifting Tool (Zypher)",
+    Resizable = true,
+    MinSize = UDim2.new(0,450,0,460),
+    MaxSize = UDim2.new(0,750,0,750),
+})
+
+local giftCategory = main:CreateCategory("Gifting")
+local giftSection = giftCategory:CreateSection("Send Gifts")
+
+local giftDisplayNames = {}
+local giftDisplayToVendorIdMap = {}
+
+for productId, productInfo in pairs(productData) do
+    local vendorId = productInfo.VendorId
+    local displayName = productInfo.Name
+    local counter = 1
+    local baseDisplayName = displayName
+    while giftDisplayToVendorIdMap[displayName] do
+        counter = counter + 1
+        displayName = baseDisplayName .. " (" .. counter .. ")"
+    end
+    table.insert(giftDisplayNames, displayName)
+    giftDisplayToVendorIdMap[displayName] = vendorId
+end
+table.sort(giftDisplayNames)
+
+local defaultGiftDisplayName = giftDisplayNames[1] or "N/A"
+local selectedItemId = giftDisplayToVendorIdMap[defaultGiftDisplayName] or nil
+local selectedGiftCount = 1
+
+local playerDisplayNames = {}
+local playerNameToIdMap = {}
+local selectedTargetUserIdFromDropdown = nil
+local manualTargetUserIdInput = ""
+
+local ReplicatedStorage = game:GetService("ReplicatedStorage")
+local Players = game:GetService("Players")
+local localPlayer = Players.LocalPlayer
+local RunService = game:GetService("RunService")
+
+local function SendGiftToPlayer(itemId, count, targetUserId)
+    if not localPlayer then return end
+    if not itemId or itemId == "" then return end
+    if not count or count <= 0 then return end
+    if not targetUserId then return end
+
+    local mailServiceFolder = ReplicatedStorage:FindFirstChild("Packages") and ReplicatedStorage.Packages:FindFirstChild("MailService")
+    if not mailServiceFolder then return end
+    local remoteFunction = mailServiceFolder:FindFirstChild("RemoteFunction")
+    if not remoteFunction or not remoteFunction:IsA("RemoteFunction") then return end
+
+    local giftToSend = { Type = "Gift", Id = itemId, Count = count }
+    local senderId = localPlayer.UserId
+
+    spawn(function()
+        pcall(function() remoteFunction:InvokeServer("SendGiftMail", senderId, targetUserId, giftToSend) end)
+    end)
+end
+
+giftSection:Create(
+    "DropDown",
+    "Select Gift Item",
+    function(selectedDisplayName)
+        if giftDisplayToVendorIdMap[selectedDisplayName] then
+            selectedItemId = giftDisplayToVendorIdMap[selectedDisplayName]
+        else
+             selectedItemId = nil
+        end
+    end,
+    {
+        options = giftDisplayNames,
+        default = defaultGiftDisplayName,
+        search = true
+    }
+)
+
+giftSection:Create(
+    "TextBox",
+    "Quantity",
+    function(input)
+        local num = tonumber(input)
+        if num and num > 0 and math.floor(num) == num then
+            selectedGiftCount = num
+        else
+            selectedGiftCount = 1
+        end
+    end,
+    {
+        text = tostring(selectedGiftCount)
+    }
+)
+
+giftSection:Create(
+    "TextBox",
+    "Target UserID (Manual)",
+    function(input)
+        manualTargetUserIdInput = input
+    end,
+    {
+        text = ""
+    }
+)
+
+giftSection:Create(
+    "Button",
+    "Send to Manual UserID",
+    function()
+        local manualId = tonumber(manualTargetUserIdInput)
+
+        if not selectedItemId then return end
+        if selectedGiftCount <= 0 then return end
+        if not manualId or manualId <= 0 or math.floor(manualId) ~= manualId then return end
+
+        SendGiftToPlayer(selectedItemId, selectedGiftCount, manualId)
+    end,
+    {
+        animated = true,
+    }
+)
